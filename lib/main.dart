@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const DoctorApp());
@@ -9,6 +10,10 @@ class DoctorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+        theme: ThemeData.light(),
+        home: const LoginScreen()
+    );
   }
 }
