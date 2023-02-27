@@ -3,7 +3,7 @@ import 'package:fast_tende_doctor_app/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
+  static String id = 'login_screen';
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
