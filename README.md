@@ -8,5 +8,5 @@ This project is a starting point for a Flutter application.
 
 ### login screen design
 
-<img src="readme/loginScreen.png" width="500" height="1800">
+<img src="readme/loginScreen.png" width="500">
 <hr>
