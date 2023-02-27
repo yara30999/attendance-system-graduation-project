@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fast_tende_doctor_app/constants.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -95,7 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: const Color(0xff0D8AD5),
                     borderRadius: BorderRadius.circular(10.0),
                     child: RawMaterialButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, HomeScreen.id);
+                      },
                       constraints: const BoxConstraints.tightFor(
                         width: 398.0,
                         height: 56.0,
