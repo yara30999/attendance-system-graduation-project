@@ -1,4 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
+
+var kDigitalClockStyle = DigitalClock(
+    is24HourTimeFormat: false,
+    showSecondsDigit: false,
+    digitAnimationStyle: Curves.easeInOutSine,
+    areaDecoration: const BoxDecoration(color: Colors.transparent),
+    areaAligment: AlignmentDirectional.topStart,
+    hourMinuteDigitTextStyle: const TextStyle(
+        color: Colors.white, fontSize: 20.0, fontFamily: 'poppins'),
+    amPmDigitTextStyle: const TextStyle(
+        color: Colors.white, fontSize: 0.0, fontFamily: 'poppins'),
+    colon: const Text(':',
+        style: TextStyle(
+            color: Colors.white, fontSize: 20.0, fontFamily: 'poppins')));
 
 const kSearchField = InputDecoration(
   filled: true,

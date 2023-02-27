@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../constants.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,16 +11,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final dynamic currentHours;
-  late final dynamic currentMinutes;
-
-  @override
-  void initState() {
-    super.initState();
-    currentHours = DateTime.now().hour;
-    currentMinutes = DateTime.now().minute;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.only(top: 40.0,left:30.0,right: 30.0,bottom: 20.0 ),
+            padding: const EdgeInsets.only(
+                top: 20.0, left: 30.0, right: 30.0, bottom: 20.0),
             decoration: const BoxDecoration(
               color: Color(0xff0d8ad5),
               borderRadius: BorderRadius.only(
@@ -43,14 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '$currentHours:$currentMinutes',
-                      style: const TextStyle(
-                        fontSize: 29.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    // 1) digital clock
+                    kDigitalClockStyle,
+                    // 2) profile photo
                     const ClipRRect(
                       borderRadius: BorderRadius.all(
                         Radius.circular(20.0),
@@ -64,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20.0),
+                //const SizedBox(height: 10.0),
                 const Text(
                   'Welcome Back',
                   style: TextStyle(
@@ -89,14 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 36.0),
+                const SizedBox(height: 10.0),
+                // 3) search field 
                 ListView(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   children: [
                     TextField(
                       decoration: kSearchField,
-                      onChanged: (value){},
+                      onChanged: (value) {},
                     )
                   ],
                 ),
@@ -108,5 +95,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
