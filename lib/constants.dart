@@ -18,7 +18,7 @@ var kDigitalClockStyle = DigitalClock(
 const kSearchField = InputDecoration(
   filled: true,
   fillColor: Colors.white,
-  contentPadding: EdgeInsets.symmetric(vertical: 15.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 0.0),
   hintText: 'Search class....',
   hintStyle: TextStyle(
       color: Color(0xff074e79), fontSize: 14.0, fontFamily: 'poppins'),
