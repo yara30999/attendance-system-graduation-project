@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fast_tende_doctor_app/constants.dart';
-import 'home_screen.dart';
+import 'first_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                     child: RawMaterialButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, HomeScreen.id);
+                        Navigator.pushNamed(context, FirstScreen.id);
                       },
                       constraints: const BoxConstraints.tightFor(
                         width: 398.0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/first_screen.dart';
 void main() {
   runApp(const DoctorApp());
 }
@@ -18,6 +19,8 @@ class DoctorApp extends StatelessWidget {
         routes: {
           LoginScreen.id : (context) => const LoginScreen(), 
           HomeScreen.id : (context)=> const HomeScreen(),
+          FirstScreen.id : (context) => const FirstScreen(),
+
         },
     );
   }
