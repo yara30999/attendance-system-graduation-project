@@ -11,8 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late DateTime _selectedDate ;
-
+  late DateTime _selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Welcome Back',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18.0,
+                          fontSize: 15.0,
                           fontWeight: FontWeight.w500),
                     ),
                     // const SizedBox(height: 12.0),
@@ -69,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Let\'s find',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 36.0,
+                          fontSize: 30.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
@@ -77,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Your next class!',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 36.0,
+                          fontSize: 30.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
@@ -87,9 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       children: [
-                        TextField(
-                          decoration: kSearchField,
-                          onChanged: (value) {},
+                        SizedBox(
+                          height: 32.0,
+                          child: TextField(
+                            decoration: kSearchField,
+                            onChanged: (value) {},
+                          ),
                         )
                       ],
                     ),
@@ -116,12 +118,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         //TODO // disply current month here
                         Text(
-                          DateTime.now().month.toString(),
+                          '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}',
                           style: const TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 15.0,
                             fontFamily: 'poppins',
                             fontWeight: FontWeight.w500,
-                            color: Color(0xff263257),
+                            color: Color(0xff8A96BC),
                           ),
                         ),
                       ],
@@ -149,10 +151,39 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w500,
                         color: Color(0xff8A96BC),
                       ),
-                      onDateChange:(selectedDate) {
-                        _selectedDate = selectedDate;
-                        print(_selectedDate);
+                      onDateChange: (selectedDate) {
+                        setState(() {
+                          _selectedDate = selectedDate;
+                          print(_selectedDate);
+                        });
                       },
+                    ),
+                    DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: const [
+                          SizedBox(
+                            height: 30,
+                            child: TabBar(
+                                labelColor: Colors.black,
+                                labelStyle:
+                                    TextStyle(fontWeight: FontWeight.w400),
+                                indicatorColor: Color(0xff074E79),
+                                //dividerColor: Color(0xff074E79),
+                                tabs: [
+                                  Tab(text: 'Classes'),
+                                  Tab(text: 'Sections'),
+                                ]),
+                          ),
+                          SizedBox(
+                            height: 150.0,
+                            child: Center(
+                              child: TabBarView(
+                                  children: [Text('class 1'), Text('sextion')]),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),
