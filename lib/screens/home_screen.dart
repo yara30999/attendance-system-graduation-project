@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../componant/user_photo.dart';
 import '../constants.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 
@@ -11,7 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late DateTime _selectedDate;
+  late int _selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         // 1) digital clock
                         kDigitalClockStyle,
                         // 2) profile photo
-                        const ClipRRect(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20.0),
-                          ),
-                          child: Image(
-                            image: AssetImage('images/user1.png'),
-                            fit: BoxFit.cover,
-                            height: 56.3,
-                            width: 57.6,
-                          ),
+                        const UserPhoto(
+                          img: 'images/user1.png',
+                          rounded: false,
                         ),
                       ],
                     ),
@@ -153,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       onDateChange: (selectedDate) {
                         setState(() {
-                          _selectedDate = selectedDate;
+                          _selectedDate = selectedDate.day;
                           print(_selectedDate);
                         });
                       },
@@ -178,8 +172,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(
                             height: 150.0,
                             child: Center(
-                              child: TabBarView(
-                                  children: [Text('class 1'), Text('sextion')]),
+                              child: TabBarView(children: [
+                                Text('classes1'),
+                                Text('section1')
+                              ]),
                             ),
                           )
                         ],
