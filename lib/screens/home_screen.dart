@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../componant/reusable_card.dart';
 import '../componant/user_photo.dart';
 import '../constants.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -155,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     DefaultTabController(
                       length: 2,
                       child: Column(
-                        children: const [
+                        children:  [
                           SizedBox(
                             height: 30,
                             child: TabBar(
@@ -173,8 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150.0,
                             child: Center(
                               child: TabBarView(children: [
-                                Text('classes1'),
-                                Text('section1')
+                                ListView(
+                                  children: [
+                                    ReusableCard(),
+                                    ReusableCard(),
+                                    ReusableCard(),
+                                  ],
+                                ),
+                                ReusableCard(),
                               ]),
                             ),
                           )
@@ -191,3 +198,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
