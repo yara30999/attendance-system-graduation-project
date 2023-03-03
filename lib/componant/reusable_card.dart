@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 class ReusableCard extends StatelessWidget {
   const ReusableCard({
     super.key,
+    required this.lectureName,
+    required this.lectureTime
   });
+
+  final String lectureName;
+  final dynamic lectureTime;
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +25,12 @@ class ReusableCard extends StatelessWidget {
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              UserPhoto(img: 'images/user1.png', rounded: false),
+            children: [
+              const UserPhoto(img: 'images/user1.png', rounded: false),
               SizedBox(height: 18.0),
               Text(
-                '10:15 AM',
-                style: TextStyle(
+                '$lectureTime AM',
+                style: const TextStyle(
                     color: Color.fromARGB(255, 100, 100, 101),
                     fontSize: 13.0,
                     fontFamily: 'poppins',
@@ -38,10 +43,10 @@ class ReusableCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'math lecture',
-                style: TextStyle(
-                    color: Color.fromARGB(255, 100, 100, 101),
+              Text(
+                lectureName.toLowerCase(),
+                style: const TextStyle(
+                    color: Color(0xff074E79),
                     fontSize: 18.0,
                     fontFamily: 'poppins',
                     fontWeight: FontWeight.w500),

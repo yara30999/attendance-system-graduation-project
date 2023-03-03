@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     DefaultTabController(
                       length: 2,
                       child: Column(
-                        children:  [
+                        children: [
                           const SizedBox(
                             height: 30,
                             child: TabBar(
@@ -176,12 +176,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: TabBarView(children: [
                                 ListView(
                                   children: const [
-                                    ReusableCard(),
-                                    ReusableCard(),
-                                    ReusableCard(),
+                                    ReusableCard(
+                                        lectureName: 'math lecture',
+                                        lectureTime: '10:30'),
+                                    ReusableCard(
+                                        lectureName: 'control lecture',
+                                        lectureTime: '2:30'),
+                                    ReusableCard(
+                                        lectureName: 'mobile lecture',
+                                        lectureTime: '4:30'),
                                   ],
                                 ),
-                                const ReusableCard(),
+                                const ReusableCard(
+                                    lectureName: 'security lecture',
+                                    lectureTime: '12:30'),
                               ]),
                             ),
                           )
@@ -198,4 +206,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
