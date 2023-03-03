@@ -99,30 +99,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: 10.0, left: 30.0, right: 30.0, bottom: 20.0),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Date',
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff263257),
-                          ),
-                        ),
-                        //TODO // disply current month here
-                        Text(
-                          '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}',
-                          style: const TextStyle(
-                            fontSize: 15.0,
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff8A96BC),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     const Text(
+                    //       'Date',
+                    //       style: TextStyle(
+                    //         fontSize: 18.0,
+                    //         fontFamily: 'poppins',
+                    //         fontWeight: FontWeight.w500,
+                    //         color: Color(0xff263257),
+                    //       ),
+                    //     ),
+                    //     //TODO // disply current month here
+                    //     Text(
+                    //       '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}',
+                    //       style: const TextStyle(
+                    //         fontSize: 15.0,
+                    //         fontFamily: 'poppins',
+                    //         fontWeight: FontWeight.w500,
+                    //         color: Color(0xff8A96BC),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     DatePicker(
                       DateTime.now(),
                       initialSelectedDate: DateTime.now(),
@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       length: 2,
                       child: Column(
                         children:  [
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                             child: TabBar(
                                 labelColor: Colors.black,
@@ -175,13 +175,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Center(
                               child: TabBarView(children: [
                                 ListView(
-                                  children: [
+                                  children: const [
                                     ReusableCard(),
                                     ReusableCard(),
                                     ReusableCard(),
                                   ],
                                 ),
-                                ReusableCard(),
+                                const ReusableCard(),
                               ]),
                             ),
                           )
