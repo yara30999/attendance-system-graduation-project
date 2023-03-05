@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../componant/reusable_card.dart';
+import '../componant/classes_tab.dart';
+import '../componant/sections_tab.dart';
 import '../componant/user_photo.dart';
 import '../constants.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -156,8 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     DefaultTabController(
                       length: 2,
                       child: Column(
-                        children: [
-                          const SizedBox(
+                        children: const [
+                          SizedBox(
                             height: 30,
                             child: TabBar(
                                 labelColor: Colors.black,
@@ -174,22 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150.0,
                             child: Center(
                               child: TabBarView(children: [
-                                ListView(
-                                  children: const [
-                                    ReusableCard(
-                                        lectureName: 'math lecture',
-                                        lectureTime: '10:30'),
-                                    ReusableCard(
-                                        lectureName: 'control lecture',
-                                        lectureTime: '2:30'),
-                                    ReusableCard(
-                                        lectureName: 'mobile lecture',
-                                        lectureTime: '4:30'),
-                                  ],
-                                ),
-                                const ReusableCard(
-                                    lectureName: 'security lecture',
-                                    lectureTime: '12:30'),
+                                ClassesTab(),
+                                SectionsTab(),
                               ]),
                             ),
                           )
@@ -206,3 +193,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+
