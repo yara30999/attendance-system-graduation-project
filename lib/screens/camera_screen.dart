@@ -87,7 +87,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                 File(imageFileList[index].path),
                                 height: 200.0,
                                 width: 310.0,
-                                fit: BoxFit.cover,
+                                fit: BoxFit.fill,
                               ),
                             ),
                             // 3 >>> to delete instance of XFile from the list.
