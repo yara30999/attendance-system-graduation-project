@@ -38,6 +38,9 @@ dependencies:
   #one_clock: ^1.0.7
   slide_digital_clock: ^1.0.3
   date_picker_timeline:
+  provider: ^6.0.2
+  image_picker: ^0.8.5+3
+  path_provider: ^2.0.8
 
 dev_dependencies:
   flutter_test:

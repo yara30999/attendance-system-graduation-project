@@ -1,5 +1,6 @@
 import 'package:fast_tende_doctor_app/componant/user_photo.dart';
 import 'package:flutter/material.dart';
+import '../screens/camera_screen.dart';
 
 class ReusableCard extends StatelessWidget {
   const ReusableCard({
@@ -67,6 +68,7 @@ class ReusableCard extends StatelessWidget {
                 ),
                 onTap: () {
                   print('camera (1) clicked');
+                  Navigator.pushNamed(context, CameraScreen.id);
                 },
               ),
             ],
