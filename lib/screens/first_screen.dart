@@ -5,7 +5,9 @@ import 'notification_screen.dart';
 import 'profile_screen.dart';
 
 class FirstScreen extends StatefulWidget {
-  const FirstScreen({super.key});
+  const FirstScreen({
+    super.key,
+  });
   static String id = 'first_screen';
 
   @override
@@ -28,7 +30,7 @@ class _FirstScreenState extends State<FirstScreen> {
       backgroundColor: Colors.white,
       body: _mainScreens.elementAt(_currentIndex),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Container(
           decoration: const BoxDecoration(
             boxShadow: <BoxShadow>[
@@ -45,7 +47,8 @@ class _FirstScreenState extends State<FirstScreen> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.home_outlined), label: 'home'),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.library_books_outlined), label: 'attendance'),
+                    icon: Icon(Icons.library_books_outlined),
+                    label: 'attendance'),
                 BottomNavigationBarItem(
                     icon: Icon(Icons.notifications_active_outlined),
                     label: 'notification'),
