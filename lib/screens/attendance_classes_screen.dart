@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-
 class AttendanceClassesScreen extends StatefulWidget {
   const AttendanceClassesScreen({super.key});
 
+  static String id = 'attendance_classes_screen';
+
   @override
-  State<AttendanceClassesScreen> createState() => _AttendanceClassesScreenState();
+  State<AttendanceClassesScreen> createState() =>
+      _AttendanceClassesScreenState();
 }
 
 class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {

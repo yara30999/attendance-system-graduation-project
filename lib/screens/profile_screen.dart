@@ -6,6 +6,8 @@ import 'login_screen.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  static String id = 'prifile_screen';
+
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }

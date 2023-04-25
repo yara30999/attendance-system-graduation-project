@@ -28,7 +28,7 @@ class ReusableCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const UserPhoto(img: 'images/user1.png', rounded: false),
-              SizedBox(height: 18.0),
+              const SizedBox(height: 18.0),
               Text(
                 '$lectureTime AM',
                 style: const TextStyle(

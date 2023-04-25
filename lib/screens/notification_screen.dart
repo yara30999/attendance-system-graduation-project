@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'first_screen.dart';
+import 'login_screen.dart';
+import 'profile_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
+
+  static String id = 'notification_screen';
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
