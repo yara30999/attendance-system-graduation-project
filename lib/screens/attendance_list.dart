@@ -208,12 +208,12 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                       //       //     ),
                       //       //   ),
                       //       // ),
-                      //       Container(
-                      //         height: 200.0,
-                      //         child: StudentList(
-                      //                               students: _filteredData,
-                      //                             ),
-                      //       ),
+                            // Container(
+                            //   height: 200.0,
+                            //   child: StudentList(
+                            //                         students: _filteredData,
+                            //                       ),
+                            // ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,

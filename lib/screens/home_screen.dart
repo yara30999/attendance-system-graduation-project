@@ -5,6 +5,7 @@ import '../componant/user_photo.dart';
 import '../constants.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import '../componant/search_field.dart';
+import '../componant/reusable_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,37 +22,29 @@ class _HomeScreenState extends State<HomeScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<String> _data = [
-    'Apple',
-    'Banana',
-    'Cherry',
-    'Date',
-    'Elderberry',
-    'Fig',
-    'Grapes',
-    'Kiwi',
-    'Lemon',
-    'Mango',
-    'Orange',
-    'Peach',
-    'Quince',
-    'Raspberry',
-    'Strawberry',
-    'Tomato',
-    'Ugli fruit',
-    'Vineapple',
-    'Watermelon',
-    'Xigua',
-    'Yellow passion fruit',
-    'Zucchini',
+  List<LectureData> lectureList = [
+    LectureData(name: 'info lecture', time: '12:30'),
+    LectureData(name: 'ecommerce1 section', time: '12:30'),
+    LectureData(name: 'math lecture', time: '12:30'),
+    LectureData(name: 'ecommerce2 lecture', time: '12:30'),
+    LectureData(name: 'ecommerce3 lecture', time: '12:30'),
+    LectureData(name: 'mobile lecture', time: '12:30'),
+    LectureData(name: 'security lecture', time: '12:30'),
   ];
-  List<String> _filteredData = [];
+  List<SectionData> sectionlist = [
+    SectionData(name: 'security section', time: '12:30'),
+    SectionData(name: 'ecommerce section', time: '12:30'),
+    SectionData(name: 'ecommerce section', time: '12:30'),
+    SectionData(name: 'ecommerce section', time: '12:30'),
+  ];
+
+  List<LectureData> _filteredData = [];
 
   void _updateFilteredData(String searchTerm) {
     setState(() {
-      _filteredData = _data
-          .where(
-              (item) => item.toLowerCase().contains(searchTerm.toLowerCase()))
+      _filteredData = lectureList
+          .where((item) =>
+              item.name.toLowerCase().contains(searchTerm.toLowerCase()))
           .toList();
     });
   }
@@ -59,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _filteredData = _data;
+    _filteredData = lectureList;
   }
 
   @override
@@ -148,26 +141,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       onSearchClearPressed: () {
                         setState(() {
                           _searchQuery = '';
-                          _filteredData = _data;
+                          _filteredData = lectureList;
                           _searchController.clear();
                         });
                         // Perform clear search logic here
                         // e.g., reset search results, etc.
                       },
                       searchController: _searchController,
-                      box: SizedBox(
-                        //to display the list of filterd data
-                        height: 70,
-                        child: ListView.builder(
-                          itemCount: _filteredData.length,
-                          itemBuilder: (context, index) => Container(
-                            color: Colors.grey,
-                            child: Text(
-                              _filteredData[index],
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -178,30 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: 10.0, left: 30.0, right: 30.0, bottom: 20.0),
                 child: Column(
                   children: [
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     const Text(
-                    //       'Date',
-                    //       style: TextStyle(
-                    //         fontSize: 18.0,
-                    //         fontFamily: 'poppins',
-                    //         fontWeight: FontWeight.w500,
-                    //         color: Color(0xff263257),
-                    //       ),
-                    //     ),
-                    //     //TODO // disply current month here
-                    //     Text(
-                    //       '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}',
-                    //       style: const TextStyle(
-                    //         fontSize: 15.0,
-                    //         fontFamily: 'poppins',
-                    //         fontWeight: FontWeight.w500,
-                    //         color: Color(0xff8A96BC),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     DatePicker(
                       DateTime.now(),
                       initialSelectedDate: DateTime.now(),
@@ -235,8 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     DefaultTabController(
                       length: 2,
                       child: Column(
-                        children: const [
-                          SizedBox(
+                        children: [
+                          const SizedBox(
                             height: 30,
                             child: TabBar(
                                 labelColor: Colors.black,
@@ -253,8 +209,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150.0,
                             child: Center(
                               child: TabBarView(children: [
-                                ClassesTab(),
-                                SectionsTab(),
+                                ClassesTab(lecture: _filteredData),
+                                SectionsTab(sections: sectionlist),
                               ]),
                             ),
                           )
