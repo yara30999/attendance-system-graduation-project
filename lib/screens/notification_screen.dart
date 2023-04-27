@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'first_screen.dart';
 import 'login_screen.dart';
 import 'profile_screen.dart';
+import '../componant/appbar_custom.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -37,7 +38,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppbarNotificationText(),
+          AppbarCustom(
+            label: 'Notification',
+            onpress: () {
+              Navigator.pushNamed(context, FirstScreen.id);
+            },
+          ),
           const SizedBox(height: 12.0),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -162,42 +168,3 @@ class NotificationNumber extends StatelessWidget {
   }
 }
 
-class AppbarNotificationText extends StatelessWidget {
-  const AppbarNotificationText({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      height: 40.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, FirstScreen.id);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Color(0xff074E79),
-            ),
-          ),
-          const SizedBox(width: 80.0),
-          const Padding(
-            padding: EdgeInsets.only(top: 7.0),
-            child: Text('Notification',
-                style: TextStyle(
-                    letterSpacing: 0.6,
-                    fontSize: 20.0,
-                    color: Color(0xff074E79),
-                    fontFamily: 'poppins',
-                    fontWeight: FontWeight.w500)),
-          ),
-        ],
-      ),
-    );
-  }
-}

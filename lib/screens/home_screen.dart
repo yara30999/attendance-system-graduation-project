@@ -4,6 +4,7 @@ import '../componant/sections_tab.dart';
 import '../componant/user_photo.dart';
 import '../constants.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import '../componant/search_field.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,60 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late int _selectedDate;
+  late int _selectedDate; // for the calendar
+
+// <<<1>>>>  from here ......................................
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  final List<String> _data = [
+    'Apple',
+    'Banana',
+    'Cherry',
+    'Date',
+    'Elderberry',
+    'Fig',
+    'Grapes',
+    'Kiwi',
+    'Lemon',
+    'Mango',
+    'Orange',
+    'Peach',
+    'Quince',
+    'Raspberry',
+    'Strawberry',
+    'Tomato',
+    'Ugli fruit',
+    'Vineapple',
+    'Watermelon',
+    'Xigua',
+    'Yellow passion fruit',
+    'Zucchini',
+  ];
+  List<String> _filteredData = [];
+
+  void _updateFilteredData(String searchTerm) {
+    setState(() {
+      _filteredData = _data
+          .where(
+              (item) => item.toLowerCase().contains(searchTerm.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredData = _data;
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  //<<<<<2>>>>>>  to here , just to use the serch field..................
 
   @override
   Widget build(BuildContext context) {
@@ -78,18 +132,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     // const SizedBox(height: 10.0),
                     // 3) search field
-                    ListView(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      children: [
-                        SizedBox(
-                          height: 32.0,
-                          child: TextField(
-                            decoration: kSearchField,
-                            onChanged: (value) {},
+                    SearchField(
+                      hintText: 'Search Class...',
+                      height: 32.0,
+                      side: BorderSide.none,
+                      searchQuery: _searchQuery,
+                      onSearchTextChanged: (String value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                        _updateFilteredData(value);
+                        // Perform search logic here
+                        // e.g., call a search function, update search results, etc.
+                      },
+                      onSearchClearPressed: () {
+                        setState(() {
+                          _searchQuery = '';
+                          _filteredData = _data;
+                          _searchController.clear();
+                        });
+                        // Perform clear search logic here
+                        // e.g., reset search results, etc.
+                      },
+                      searchController: _searchController,
+                      box: SizedBox(
+                        //to display the list of filterd data
+                        height: 70,
+                        child: ListView.builder(
+                          itemCount: _filteredData.length,
+                          itemBuilder: (context, index) => Container(
+                            color: Colors.grey,
+                            child: Text(
+                              _filteredData[index],
+                            ),
                           ),
-                        )
-                      ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

@@ -15,20 +15,6 @@ var kDigitalClockStyle = DigitalClock(
         style: TextStyle(
             color: Colors.white, fontSize: 20.0, fontFamily: 'poppins')));
 
-const kSearchField = InputDecoration(
-  filled: true,
-  fillColor: Colors.white,
-  contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-  hintText: 'Search class....',
-  hintStyle: TextStyle(
-      color: Color(0xff074e79), fontSize: 14.0, fontFamily: 'poppins'),
-  prefixIcon: Icon(Icons.search),
-  border: OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(12.0)),
-    borderSide: BorderSide.none,
-  ),
-);
-
 const kTextFieldDecoration = InputDecoration(
   hintText: 'Enter value',
   hintStyle: TextStyle(color: Colors.grey),
