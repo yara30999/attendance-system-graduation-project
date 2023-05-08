@@ -75,7 +75,7 @@ class TopBlueContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xff0D8AD5),
-      height: 150.0,
+      height: 135.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,

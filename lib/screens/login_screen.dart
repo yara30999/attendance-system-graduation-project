@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fast_tende_doctor_app/constants.dart';
-import 'first_screen.dart';
+import '../services/login_method.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,6 +10,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late String email;
+  late String password;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,14 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   'TAKE YOUR ATTENDANCE',
                   style: TextStyle(
-                    letterSpacing: 1.0,
-                    fontSize: 8.0,
-                    fontWeight: FontWeight.normal
-                  ),
+                      letterSpacing: 1.0,
+                      fontSize: 8.0,
+                      fontWeight: FontWeight.normal),
                 ),
                 const Text(
                   'EASILY',
-                  style: TextStyle(fontSize: 8.0, letterSpacing: 1.0,),
+                  style: TextStyle(
+                    fontSize: 8.0,
+                    letterSpacing: 1.0,
+                  ),
                 ),
                 const SizedBox(height: 30.0),
                 const Text(
@@ -75,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
+                      controller: _emailController,
                       textAlign: TextAlign.start,
                       keyboardType: TextInputType.emailAddress,
                       decoration:
@@ -83,8 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
+                      controller: _passwordController,
                       textAlign: TextAlign.start,
                       obscureText: true,
+                      keyboardType: TextInputType.emailAddress,
                       decoration:
                           kTextFieldDecoration.copyWith(hintText: 'Password')),
                 ),
@@ -97,7 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10.0),
                     child: RawMaterialButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, FirstScreen.id);
+                        email = _emailController.text.trim();
+                        password = _passwordController.text.trim();
+                        SignInOrOut().login(context, email, password);
                       },
                       constraints: const BoxConstraints.tightFor(
                         width: 398.0,

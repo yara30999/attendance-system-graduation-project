@@ -15,13 +15,12 @@ class AttendanceClassesScreen extends StatefulWidget {
 }
 
 class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
-
   final kFirstDay = DateTime(2022);
   final kLastDay = DateTime(2024);
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  
+
   List<Map<String, String>> cardData = [
     {
       'lecture': 'lecture software engineering',

@@ -21,7 +21,8 @@ class DoctorApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
       //home: const LoginScreen(),
-      initialRoute: FirstScreen.id,
+      // initialRoute: FirstScreen.id,
+      initialRoute: LoginScreen.id,
       routes: {
         LoginScreen.id: (context) => const LoginScreen(),
         HomeScreen.id: (context) => const HomeScreen(),

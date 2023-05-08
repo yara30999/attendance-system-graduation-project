@@ -78,7 +78,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
                 const SizedBox(height: 10.0),
                 SizedBox(
-                  height: 140,
+                  height: 132,
                   child: ListView.builder(
                       itemCount: notificationList.length,
                       shrinkWrap: true,
