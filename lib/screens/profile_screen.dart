@@ -20,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? _authToken;
+  String? _authType;
   late bool _isLoaded;
   late String name;
   late String email;
@@ -39,20 +40,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _isLoaded = false;
     });
-    
+    //////////////////////////////////////////////////get token first.
     await tokenState.getAuthToken().then((value) {
       setState(() {
         _authToken = value;
       });
     });
     print('my token $_authToken');
+    //////////////////////////////////////////////////then get type.
+    await tokenState.getAuthType().then((value) {
+      setState(() {
+        _authType = value;
+      });
+    });
+    print('my type $_authType');
     fetchProfileData();
-    
-    
   }
 
   void fetchProfileData() async {
-    if (auth.user!.userType == 'Professor') {
+    if (_authType!.toLowerCase() == 'professor') {
       var response =
           await BaseClient().get('/professor/', _authToken!).catchError((err) {
         print('yaraaaaaaaaaa error $err');
@@ -67,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         id = data.professor.id;
         _isLoaded = true;
       });
-    } else if (auth.user!.userType == 'Assistant') {
+    } else if (_authType!.toLowerCase() == 'assistant') {
       var response =
           await BaseClient().get('/assistant/', _authToken!).catchError((err) {
         print('yaraaaaaaaaaa error $err');
@@ -250,11 +256,12 @@ class InfoDisplay extends StatelessWidget {
       {super.key,
       required this.icon,
       required this.titleText,
-      required this.subtitleText, this.fontSize = 18});
+      required this.subtitleText,
+      this.fontSize = 18});
   final IconData? icon;
   final String titleText;
   final String subtitleText;
-  final double? fontSize ;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -285,9 +292,9 @@ class InfoDisplay extends StatelessWidget {
                   ),
                   Text(
                     subtitleText,
-                    style:TextStyle(
+                    style: TextStyle(
                         fontFamily: 'poppins',
-                        fontSize:fontSize,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.w100,
                         color: Colors.black),
                   ),

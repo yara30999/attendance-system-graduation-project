@@ -1,17 +1,23 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-
 final tokenState = TokenSaved();
 
-AuthState auth =AuthState();
+AuthState auth = AuthState();
+
 class TokenSaved {
   late String _authToken;
+  late String _authType;
 
   String get authToken => _authToken;
+  String get authType => _authType;
 
   set authToken(String value) {
     _authToken = value;
+  }
+
+  set authType(String value) {
+    _authType = value;
   }
 
   Future<void> setAuthToken(String value) async {
@@ -20,10 +26,22 @@ class TokenSaved {
     authToken = value;
   }
 
+  Future<void> setAuthtype(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('authType', value);
+    authType = value;
+  }
+
   Future<String> getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('authToken')!;
     return authToken.toString();
+  }
+
+  Future<String> getAuthType() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    authType = prefs.getString('authType')!;
+    return authType.toString();
   }
 }
 

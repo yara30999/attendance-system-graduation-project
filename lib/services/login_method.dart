@@ -79,13 +79,16 @@ class SignInOrOut {
       if (response.statusCode == 200) {
         debugPrint('correct response 200');
         auth = authStateFromJson(response.body);
-        
+
         final authToken = auth.user!.token.toString();
+        final authType = auth.user!.userType.toString();
         print(authToken.toString());
         // save the authToken to shared preferences
-        // final tokenState = TokenSaved();
+        // final tokenState = TokenSaved(); because it is already creaded in auth state file.
         await tokenState.setAuthToken(authToken);
-
+        await tokenState.setAuthtype(authType);
+        print(authType);
+        print(authToken);
         // navigate to the first screen
         try {
           Navigator.pushNamed(context, FirstScreen.id);
