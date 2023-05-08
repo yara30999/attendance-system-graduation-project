@@ -1,7 +1,13 @@
 import 'package:fast_tende_doctor_app/screens/first_screen.dart';
 import 'package:fast_tende_doctor_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import '../models/assestant_model.dart';
+import '../models/auth_state.dart';
+import '../models/proffessor_model.dart';
+import '../services/base_client.dart';
 import 'login_screen.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,6 +19,72 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? _authToken;
+  late bool _isLoaded;
+  late String name;
+  late String email;
+  late String id;
+  late String phone;
+
+  @override
+  void initState() {
+    super.initState();
+    loadToken();
+    // fetchProfileData();
+  }
+
+  Future<void> loadToken() async {
+    // load the authToken from shared preferences
+    // final tokenState = TokenSaved();
+    setState(() {
+      _isLoaded = false;
+    });
+    
+    await tokenState.getAuthToken().then((value) {
+      setState(() {
+        _authToken = value;
+      });
+    });
+    print('my token $_authToken');
+    fetchProfileData();
+    
+    
+  }
+
+  void fetchProfileData() async {
+    if (auth.user!.userType == 'Professor') {
+      var response =
+          await BaseClient().get('/professor/', _authToken!).catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+      debugPrint('successful:');
+      setState(() {
+        final data = proffessorModelFromJson(response);
+        name = data.professor.name;
+        email = data.professor.email;
+        phone = data.professor.phoneNumber;
+        id = data.professor.id;
+        _isLoaded = true;
+      });
+    } else if (auth.user!.userType == 'Assistant') {
+      var response =
+          await BaseClient().get('/assistant/', _authToken!).catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+      debugPrint('successful:');
+      setState(() {
+        final data = assestantModelFromJson(response);
+        name = data.assistant.name;
+        email = data.assistant.email;
+        phone = data.assistant.phoneNumber;
+        id = data.assistant.id;
+        _isLoaded = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,25 +105,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 70.0),
-            const InfoDisplay(
+            InfoDisplay(
               icon: Icons.perm_identity_outlined,
               titleText: 'Name',
-              subtitleText: 'Dr/Mohammed Ahmed',
+              subtitleText: _isLoaded ? name : 'loading',
             ),
-            const InfoDisplay(
+            InfoDisplay(
               icon: Icons.email_outlined,
               titleText: 'Email Address',
-              subtitleText: 'Ahmed@gmail.com',
+              subtitleText: _isLoaded ? email : 'loading',
+              fontSize: 15.0,
             ),
             const InfoDisplay(
               icon: Icons.description_outlined,
               titleText: 'ID-Number',
               subtitleText: '19195568',
             ),
-            const InfoDisplay(
+            InfoDisplay(
               icon: Icons.phone_outlined,
               titleText: 'Mobile Number',
-              subtitleText: '0100069696',
+              subtitleText: _isLoaded ? phone : 'loading',
             ),
             const SizedBox(height: 10.0),
             LogoutButton(
@@ -177,10 +250,11 @@ class InfoDisplay extends StatelessWidget {
       {super.key,
       required this.icon,
       required this.titleText,
-      required this.subtitleText});
+      required this.subtitleText, this.fontSize = 18});
   final IconData? icon;
   final String titleText;
   final String subtitleText;
+  final double? fontSize ;
 
   @override
   Widget build(BuildContext context) {
@@ -211,9 +285,9 @@ class InfoDisplay extends StatelessWidget {
                   ),
                   Text(
                     subtitleText,
-                    style: const TextStyle(
+                    style:TextStyle(
                         fontFamily: 'poppins',
-                        fontSize: 18,
+                        fontSize:fontSize,
                         fontWeight: FontWeight.w100,
                         color: Colors.black),
                   ),

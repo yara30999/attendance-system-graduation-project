@@ -74,16 +74,16 @@ class SignInOrOut {
           body: jsonEncode({'email': email, 'password': password}),
           headers: {HttpHeaders.contentTypeHeader: 'application/json'});
 
-      print('status code = ${response.statusCode} yaraaaaaaaaaaaaaa');
+      debugPrint('status code = ${response.statusCode} yaraaaaaaaaaaaaaa');
 
       if (response.statusCode == 200) {
-        print('correct response 200');
-        final data = authStateFromJson(response.body);
-        print(data);
-        final authToken = data.user.token;
-
+        debugPrint('correct response 200');
+        auth = authStateFromJson(response.body);
+        
+        final authToken = auth.user!.token.toString();
+        print(authToken.toString());
         // save the authToken to shared preferences
-        final tokenState = TokenSaved();
+        // final tokenState = TokenSaved();
         await tokenState.setAuthToken(authToken);
 
         // navigate to the first screen

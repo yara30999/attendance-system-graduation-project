@@ -1,6 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+
+final tokenState = TokenSaved();
+
+AuthState auth =AuthState();
 class TokenSaved {
   late String _authToken;
 
@@ -19,7 +23,7 @@ class TokenSaved {
   Future<String> getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('authToken')!;
-    return authToken;
+    return authToken.toString();
   }
 }
 
@@ -32,12 +36,12 @@ AuthState authStateFromJson(String str) => AuthState.fromJson(json.decode(str));
 String authStateToJson(AuthState data) => json.encode(data.toJson());
 
 class AuthState {
-  String message;
-  User user;
+  String? message;
+  User? user;
 
   AuthState({
-    required this.message,
-    required this.user,
+    this.message,
+    this.user,
   });
 
   factory AuthState.fromJson(Map<String, dynamic> json) => AuthState(
@@ -47,7 +51,7 @@ class AuthState {
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "user": user.toJson(),
+        "user": user!.toJson(),
       };
 }
 
