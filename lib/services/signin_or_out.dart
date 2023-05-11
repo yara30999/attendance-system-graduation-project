@@ -73,8 +73,8 @@ class SignInOrOut {
   void logout(BuildContext context) async {
     // set the token and auth type with empty string ...
     try {
-      await tokenState.setAuthToken('');
-      await tokenState.setAuthtype('');
+      await tokenState.setAuthToken('empty');
+      await tokenState.setAuthtype('empty');
       Navigator.pushNamed(context, LoginScreen.id);
     } catch (e) {
       showDialog(

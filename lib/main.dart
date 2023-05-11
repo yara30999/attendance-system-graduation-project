@@ -93,10 +93,10 @@ class _LoginCheckState extends State<LoginCheck> {
         ),
       );
     } else {
-      if (_authToken != '') {
-        return const FirstScreen();
-      } else {
+      if (_authToken == 'empty' || _authToken == '' || _authToken == null ) {
         return const LoginScreen();
+      } else {
+        return const FirstScreen();
       }
     }
   }
