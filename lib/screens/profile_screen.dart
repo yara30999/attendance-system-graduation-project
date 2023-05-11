@@ -8,6 +8,7 @@ import '../services/base_client.dart';
 import 'login_screen.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../services/signin_or_out.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,6 +27,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String email;
   late String id;
   late String phone;
+
+  showError(String data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error...'),
+        content: Text(data),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -59,8 +76,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void fetchProfileData() async {
     if (_authType!.toLowerCase() == 'professor') {
-      var response =
-          await BaseClient().get('/professor/', _authToken!).catchError((err) {
+      var response = await BaseClient()
+          .get(
+              '/professor/', _authToken!, errTxt: 'can\'t load data', showError)
+          .catchError((err) {
         print('yaraaaaaaaaaa error $err');
       });
       if (response == null) return;
@@ -74,8 +93,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _isLoaded = true;
       });
     } else if (_authType!.toLowerCase() == 'assistant') {
-      var response =
-          await BaseClient().get('/assistant/', _authToken!).catchError((err) {
+      var response = await BaseClient()
+          .get(
+              '/assistant/', _authToken!, errTxt: 'can\'t load data', showError)
+          .catchError((err) {
         print('yaraaaaaaaaaa error $err');
       });
       if (response == null) return;
@@ -135,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 10.0),
             LogoutButton(
               onPress: () {
-                Navigator.pushNamed(context, LoginScreen.id);
+                SignInOrOut().logout(context);
               },
             )
           ],

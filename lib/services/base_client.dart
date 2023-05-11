@@ -11,7 +11,9 @@ class BaseClient {
   // var client = http.Client();
 
   //GET
-  Future<dynamic> get(String api, String token) async {
+  Future<dynamic> get(
+      String api, String token, void Function(String) showErrorDialog,
+      {String errTxt = 'can\'t load data'}) async {
     var url = Uri.parse(baseUrl + api);
     var headers = {
       HttpHeaders.authorizationHeader: 'Bearer $token',
@@ -24,6 +26,7 @@ class BaseClient {
     if (response.statusCode == 200) {
       return response.body;
     } else {
+      showErrorDialog(errTxt);
       //throw exception and catch it in UI
       throw Exception('Failed to make get request ==> yara:-)');
     }
