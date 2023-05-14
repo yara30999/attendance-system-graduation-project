@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "265559642199",
+    "project_id": "fast-tende",
+    "storage_bucket": "fast-tende.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265559642199:android:38d4bb42d130a6af715312",
+        "android_client_info": {
+          "package_name": "com.yaranaserelniny.fast_tende_doctor_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265559642199-c7cnvth7t9e57eoito2lju7um5ep028n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzR3-wreMjUphBFT91BapmWiO37Mk0ZgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265559642199-c7cnvth7t9e57eoito2lju7um5ep028n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

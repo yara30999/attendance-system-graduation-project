@@ -35,13 +35,13 @@ class TokenSaved {
   Future<String?> getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('authToken');
-    return authToken.toString();
+    return authToken;
   }
 
   Future<String?> getAuthType() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authType = prefs.getString('authType');
-    return authType.toString();
+    return authType;
   }
 }
 
