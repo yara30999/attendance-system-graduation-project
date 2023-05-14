@@ -1,9 +1,5 @@
-//import 'dart:js';
-
 import 'package:fast_tende_doctor_app/services/notification_service.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'models/auth_state.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -15,24 +11,11 @@ import 'screens/attendance_classes_screen.dart';
 import 'screens/notification_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-//import 'services/firebase_messaging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'screens/empty_page.dart';
 import 'screens/home_page.dart';
-import 'dart:convert';
-//import 'package:firebase_analytics/firebase_analytics.dart';
-//import 'package:firebase_analytics/observer.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-// const AndroidNotificationChannel channel = AndroidNotificationChannel(
-//     'high_importance_channel',      //id
-//     'high importance notification', //title
-//     'this is used channel',         //discription
-//     importance: Importance.high,
-//     playSound: true);
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
@@ -49,16 +32,15 @@ Future<void> getToken() async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await getToken();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // await flutterLocalNotificationsPlugin
-  //     .resolvePlatformSpecificImplementation<
-  //         AndroidFlutterLocalNotificationsPlugin>()
-  //     ?.createNotificationChannel(channel);
+  await getToken();
+
+  // if the app in the background
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   NotificationSettings settings =
       await FirebaseMessaging.instance.requestPermission(
@@ -70,6 +52,7 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
+
   print('User granted permission: ${settings.authorizationStatus}');
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -77,46 +60,6 @@ Future<void> main() async {
     badge: true,
     sound: true,
   );
-
-  // FirebaseMessagingService messagingService = FirebaseMessagingService();
-  // await messagingService.init();
-  // await messagingService.getToken();
-
-  // //if the app in background this will work ...
-  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-  //   print('on message open yaaara $message');
-  //   Navigator.pushNamed(navigatorKey.currentState!.context, HomePage.id,
-  //       arguments: {"message": json.encode(message.data)});
-  // });
-
-  // if the app closed or terminated
-  // FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
-  //   if (message != null) {
-  //     print('on message open yaaara terminated  $message');
-  //     Navigator.pushNamed(navigatorKey.currentState!.context, HomePage.id,
-  //         arguments: {"message": json.encode(message.data)});
-  //   }
-  // });
-
-  //////////////////////////////////////////////////////////////////////////////
-  // final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  // NotificationSettings settings = await _messaging.requestPermission(
-  //   alert: true,
-  //   announcement: false,
-  //   badge: true,
-  //   carPlay: false,
-  //   criticalAlert: false,
-  //   provisional: false,
-  //   sound: true,
-  // );
-  // print('User granted permission: ${settings.authorizationStatus}');
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //   print('Got a message whilst in the foreground!');
-  //   print('Message data: ${message.data}');
-  //   if (message.notification != null) {
-  //     print('Message also contained a notification: ${message.notification}');
-  //   }
-  // });
 
   await NotificationService.initializeNotification();
 
@@ -174,41 +117,24 @@ class _LoginCheckState extends State<LoginCheck> {
       print('Message data: ${message.data}');
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
-        final title = message.data['title']; //message.notification!.title ??
-        final body = message.data['body']; //message.notification!.body ??
+        final title = message.notification!.title ?? message.data['title'];
+        final body = message.notification!.body ?? message.data['body'];
         print(title);
         print(body);
         await NotificationService.showNotification(
           title: title,
           body: body,
         );
-        // flutterLocalNotificationsPlugin.show(
-        //   message.hashCode,
-        //   title,
-        //   body,
-        //   NotificationDetails(
-        //       android: AndroidNotificationDetails(
-        //     channel.id,
-        //     channel.name,
-        //     channel.description,
-        //     color: Colors.blue,
-        //     playSound: true,
-        //     importance: Importance.max,
-        //     priority: Priority.high,
-        //     //showWhen: false,
-        //     //icon:
-        //   )),
-        // );
-
-        Navigator.pushNamed(navigatorKey.currentState!.context, NotificationScreen.id);
+        Navigator.pushNamed(
+          navigatorKey.currentState!.context,
+          NotificationScreen.id,
+        );
       }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print('on message open yaaara $message');
       print('on message open yaaara ${message.data}');
-      // Navigator.pushNamed(navigatorKey.currentState!.context, HomePage.id,
-      //     arguments: {"message": json.encode(message.data)});
       if (message.notification != null) {
         final title = message.data['title'];
         final body = message.data['body'];
@@ -227,6 +153,10 @@ class _LoginCheckState extends State<LoginCheck> {
                 ),
               );
             });
+        Navigator.pushNamed(
+          navigatorKey.currentState!.context,
+          NotificationScreen.id,
+        );
       }
     });
 
@@ -236,7 +166,10 @@ class _LoginCheckState extends State<LoginCheck> {
         .then((RemoteMessage? message) {
       if (message != null) {
         print('on message open yaaara terminated  ${message.data}');
-        Navigator.pushNamed(navigatorKey.currentState!.context, NotificationScreen.id);
+        Navigator.pushNamed(
+          navigatorKey.currentState!.context,
+          NotificationScreen.id,
+        );
       }
     });
     //////////////////////////////////////////////////////////////
