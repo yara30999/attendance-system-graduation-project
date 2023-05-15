@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // const String baseUrl = 'http://localhost:8081';
-const String baseUrl = 'http://192.168.1.222:8081';
+const String baseUrl = 'http://192.168.1.250:8081';
 
 // HttpHeaders.contentTypeHeader: 'application/json'
 class BaseClient {

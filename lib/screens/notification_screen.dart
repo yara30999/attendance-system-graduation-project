@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import '../models/auth_state.dart';
 import 'first_screen.dart';
-import 'login_screen.dart';
-import 'profile_screen.dart';
 import '../componant/appbar_custom.dart';
+
+final _firestore = FirebaseFirestore.instance;
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -30,6 +31,29 @@ class _NotificationScreenState extends State<NotificationScreen> {
     {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
   ];
 
+  String? _authType;
+  late bool _isLoaded;
+  @override
+  void initState() {
+    super.initState();
+    loadUserType();
+  }
+
+  Future<void> loadUserType() async {
+    setState(() {
+      _isLoaded = false;
+    });
+    await tokenState.getAuthType().then((value) {
+      setState(() {
+        _authType = value!.toLowerCase();
+      });
+    });
+    print('my user type $_authType');
+    setState(() {
+      _isLoaded = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +75,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NotificationNumber(
-                    notiNumber: notificationList.length.toString()),
+                  myStream: _isLoaded
+                      ? _firestore
+                          .collection(
+                              'notifications_${_authType!.toLowerCase()}')
+                          .orderBy("orderDate", descending: false)
+                          .snapshots()
+                      : null,
+                ),
                 const SizedBox(height: 10.0),
                 const Text(
                   'Today',
@@ -59,18 +90,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
                 const SizedBox(height: 10.0),
                 SizedBox(
-                  height: 210,
-                  child: ListView.builder(
-                      itemCount: notificationList.length,
-                      shrinkWrap: true,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (BuildContext context, int index) {
-                        return NotificationsView(
-                          label: notificationList[index]['label'].toString(),
-                          date: notificationList[index]['date'].toString(),
-                        );
-                      }),
-                ),
+                    height: 210,
+                    child: NotificationStreamBuilder(
+                      myStream: _isLoaded
+                          ? _firestore
+                              .collection(
+                                  'notifications_${_authType!.toLowerCase().trim()}')
+                              .orderBy("orderDate", descending: false)
+                              .snapshots()
+                          : null,
+                    )),
                 const SizedBox(height: 10.0),
                 const Text(
                   'This Week',
@@ -83,7 +112,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       itemCount: notificationList.length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
-                        return NotificationsView(
+                        return NotificationsLine(
                           label: notificationList[index]['label'].toString(),
                           date: notificationList[index]['date'].toString(),
                         );
@@ -98,8 +127,86 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 }
 
-class NotificationsView extends StatelessWidget {
-  const NotificationsView({
+class NotificationNumber extends StatelessWidget {
+  const NotificationNumber({super.key, required this.myStream});
+  final Stream<QuerySnapshot<Object?>>? myStream;
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: myStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Row(
+            children: const [
+              Text('You have '),
+              Text(
+                '0 Notifications',
+                style: TextStyle(color: Color(0xff66B4E3)),
+              ),
+              Text(' today.')
+            ],
+          );
+        }
+        // Get the number of documents in the collection
+        int count = snapshot.data!.size;
+        // Build your UI using the count
+        return Row(
+          children: [
+            const Text('You have '),
+            Text(
+              '$count Notifications',
+              style: const TextStyle(color: Color(0xff66B4E3)),
+            ),
+            const Text(' today.')
+          ],
+        );
+      },
+    );
+  }
+}
+
+class NotificationStreamBuilder extends StatelessWidget {
+  const NotificationStreamBuilder({super.key, required this.myStream});
+  final Stream<QuerySnapshot<Object?>>? myStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: myStream,
+        builder: (context, snapshot) {
+          List<NotificationsLine> notificationsWidget = [];
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text(
+                'You don\'t have notifications...',
+                style: TextStyle(
+                  color: Colors.blueAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            );
+          }
+          final notifications = snapshot.data!.docs.reversed; //list of docs
+          for (var notify in notifications) {
+            final orderId = notify.get('orderId');
+            final orderDate = notify.get('orderDate');
+
+            notificationsWidget.add(NotificationsLine(
+              label: orderId.toString(),
+              date: orderDate.toDate().toLocal().toString(),
+            ));
+          }
+          return ListView(
+            scrollDirection: Axis.vertical,
+            children: notificationsWidget,
+          );
+        });
+  }
+}
+
+class NotificationsLine extends StatelessWidget {
+  const NotificationsLine({
     super.key,
     required this.label,
     required this.date,
@@ -149,22 +256,3 @@ class NotificationsView extends StatelessWidget {
     );
   }
 }
-
-class NotificationNumber extends StatelessWidget {
-  const NotificationNumber({super.key, required this.notiNumber});
-  final String notiNumber;
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Text('You have '),
-        Text(
-          '$notiNumber Notifications',
-          style: const TextStyle(color: Color(0xff66B4E3)),
-        ),
-        const Text(' today.')
-      ],
-    );
-  }
-}
-

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fast_tende_doctor_app/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'models/auth_state.dart';
@@ -14,6 +17,7 @@ import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'screens/empty_page.dart';
 import 'screens/home_page.dart';
+import 'package:intl/intl.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -22,6 +26,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   print('_firebaseMessagingBackgroundHandler yaraa ${message.data}');
+  final title = message.notification!.title.toString();
+  final body = message.notification!.body.toString();
+  final orderId = message.data['orderId'];
+  final orderDate = message.data['orderDate'];
+  print('my title is ...$title');
+  print('my body is ..$body');
+  await saveToDatabase(orderId, orderDate);
+  await NotificationService.showNotification(
+    title: title,
+    body: body,
+  );
+  Navigator.pushNamed(
+    navigatorKey.currentState!.context,
+    NotificationScreen.id,
+  );
+}
+
+Future<void> saveToDatabase(orderId, orderDate) async {
+  final userType = await tokenState.getAuthType();
+  DateTime dateTime = DateFormat('yyyy-M-d').parse(orderDate);
+  print('datetime is .....$dateTime');
+  Timestamp timestamp = Timestamp.fromDate(dateTime);
+  print('timestamp is .....$timestamp');
+  await _firestore.collection('notifications_${userType!.toLowerCase()}').add({
+    'orderId': orderId,
+    'orderDate': timestamp,
+  });
 }
 
 Future<void> getToken() async {
@@ -29,6 +60,8 @@ Future<void> getToken() async {
   print('my regiteration token is .... $token');
   // return token ?? '';
 }
+
+final _firestore = FirebaseFirestore.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -107,6 +140,20 @@ class _LoginCheckState extends State<LoginCheck> {
   String? _authToken;
   String? _authType;
   late bool _isLoaded;
+
+  Future<void> saveToDatabase(String orderId, String orderDate) async {
+    DateTime dateTime = DateFormat('yyyy-M-d').parse(orderDate);
+    print('datetime is .....$dateTime');
+    Timestamp timestamp = Timestamp.fromDate(dateTime);
+    print('timestamp is .....$timestamp');
+    await _firestore
+        .collection('notifications_${_authType!.toLowerCase()}')
+        .add({
+      'orderId': orderId,
+      'orderDate': timestamp,
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -117,18 +164,23 @@ class _LoginCheckState extends State<LoginCheck> {
       print('Message data: ${message.data}');
       if (message.notification != null) {
         print('Message also contained a notification: ${message.notification}');
-        final title = message.notification!.title ?? message.data['title'];
-        final body = message.notification!.body ?? message.data['body'];
-        print(title);
-        print(body);
+        final title = message.notification!.title.toString();
+        final body = message.notification!.body.toString();
+        final orderId = message.data['orderId'];
+        final orderDate = message.data['orderDate'];
+        print('my title is ...$title');
+        print('my body is ..$body');
+        print('my orderId is ...$orderId');
+        print('my orderDate is ..$orderDate');
+        await saveToDatabase(orderId, orderDate);
         await NotificationService.showNotification(
           title: title,
           body: body,
         );
-        Navigator.pushNamed(
-          navigatorKey.currentState!.context,
-          NotificationScreen.id,
-        );
+        // Navigator.pushNamed(
+        //   navigatorKey.currentState!.context,
+        //   NotificationScreen.id,
+        // );
       }
     });
 
@@ -136,8 +188,17 @@ class _LoginCheckState extends State<LoginCheck> {
       print('on message open yaaara $message');
       print('on message open yaaara ${message.data}');
       if (message.notification != null) {
-        final title = message.data['title'];
-        final body = message.data['body'];
+        final title = message.notification!.title.toString();
+        final body = message.notification!.body.toString();
+        final orderId = message.data['orderId'];
+        final orderDate = message.data['orderDate'];
+        print('my title is ...$title');
+        print('my body is ..$body');
+        print('my orderId is ...$orderId');
+        print('my orderDate is ..$orderDate');
+
+        await saveToDatabase(orderId, orderDate);
+
         showDialog(
             context: navigatorKey.currentState!.context,
             builder: (_) {
@@ -153,23 +214,34 @@ class _LoginCheckState extends State<LoginCheck> {
                 ),
               );
             });
-        Navigator.pushNamed(
-          navigatorKey.currentState!.context,
-          NotificationScreen.id,
-        );
+        // Navigator.pushNamed(
+        //   navigatorKey.currentState!.context,
+        //   NotificationScreen.id,
+        // );
       }
     });
 
     // if the app closed or terminated
     FirebaseMessaging.instance
         .getInitialMessage()
-        .then((RemoteMessage? message) {
+        .then((RemoteMessage? message)async {
       if (message != null) {
         print('on message open yaaara terminated  ${message.data}');
-        Navigator.pushNamed(
-          navigatorKey.currentState!.context,
-          NotificationScreen.id,
-        );
+        if (message.notification != null) {
+          final title = message.notification!.title.toString();
+          final body = message.notification!.body.toString();
+          final orderId = message.data['orderId'];
+          final orderDate = message.data['orderDate'];
+          print('my title is ...$title');
+          print('my body is ..$body');
+          print('my orderId is ...$orderId');
+          print('my orderDate is ..$orderDate');
+          await saveToDatabase(orderId, orderDate);
+          // Navigator.pushNamed(
+          //   navigatorKey.currentState!.context,
+          //   NotificationScreen.id,
+          // );
+        }
       }
     });
     //////////////////////////////////////////////////////////////
@@ -190,7 +262,7 @@ class _LoginCheckState extends State<LoginCheck> {
     print('my token $_authToken');
     await tokenState.getAuthType().then((value) {
       setState(() {
-        _authType = value;
+        _authType = value!.toLowerCase();
         // _isLoaded = true;
       });
     });
