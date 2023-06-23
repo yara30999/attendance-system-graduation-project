@@ -49,50 +49,64 @@ class TokenSaved {
 //
 //     final authState = authStateFromJson(jsonString);
 
+
 AuthState authStateFromJson(String str) => AuthState.fromJson(json.decode(str));
 
 String authStateToJson(AuthState data) => json.encode(data.toJson());
 
 class AuthState {
-  String? message;
-  User? user;
+    String? message;
+    User? user;
 
-  AuthState({
-    this.message,
-    this.user,
-  });
+    AuthState({
+        this.message,
+        this.user,
+    });
 
-  factory AuthState.fromJson(Map<String, dynamic> json) => AuthState(
+    factory AuthState.fromJson(Map<String, dynamic> json) => AuthState(
         message: json["message"],
         user: User.fromJson(json["user"]),
-      );
+    );
 
-  Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toJson() => {
         "message": message,
-        "user": user!.toJson(),
-      };
+        "user": user?.toJson(),
+    };
 }
 
 class User {
-  String token;
-  String userId;
-  String userType;
+    String token;
+    String name;
+    String phoneNumber;
+    String email;
+    String userId;
+    String userType;
 
-  User({
-    required this.token,
-    required this.userId,
-    required this.userType,
-  });
+    User({
+        required this.token,
+        required this.name,
+        required this.phoneNumber,
+        required this.email,
+        required this.userId,
+        required this.userType,
+    });
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+    factory User.fromJson(Map<String, dynamic> json) => User(
         token: json["token"],
+        name: json["name"],
+        phoneNumber: json["phoneNumber"],
+        email: json["email"],
         userId: json["userId"],
         userType: json["userType"],
-      );
+    );
 
-  Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toJson() => {
         "token": token,
+        "name": name,
+        "phoneNumber": phoneNumber,
+        "email": email,
         "userId": userId,
         "userType": userType,
-      };
+    };
 }
+

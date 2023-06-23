@@ -146,20 +146,22 @@ class NotificationNumber extends StatelessWidget {
               Text(' today.')
             ],
           );
+        }else{
+          // Get the number of documents in the collection
+          int count = snapshot.data!.size;
+          // Build your UI using the count
+          return Row(
+            children: [
+              const Text('You have '),
+              Text(
+                '$count Notifications',
+                style: const TextStyle(color: Color(0xff66B4E3)),
+              ),
+              const Text(' today.')
+            ],
+          );
         }
-        // Get the number of documents in the collection
-        int count = snapshot.data!.size;
-        // Build your UI using the count
-        return Row(
-          children: [
-            const Text('You have '),
-            Text(
-              '$count Notifications',
-              style: const TextStyle(color: Color(0xff66B4E3)),
-            ),
-            const Text(' today.')
-          ],
-        );
+        
       },
     );
   }

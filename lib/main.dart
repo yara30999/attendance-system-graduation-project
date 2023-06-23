@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fast_tende_doctor_app/services/notification_service.dart';
 import 'package:flutter/material.dart';
@@ -146,6 +145,11 @@ class _LoginCheckState extends State<LoginCheck> {
     print('datetime is .....$dateTime');
     Timestamp timestamp = Timestamp.fromDate(dateTime);
     print('timestamp is .....$timestamp');
+    await tokenState.getAuthType().then((value) {
+      setState(() {
+        _authType = value?.toLowerCase();
+      });
+    });
     await _firestore
         .collection('notifications_${_authType!.toLowerCase()}')
         .add({
@@ -224,7 +228,7 @@ class _LoginCheckState extends State<LoginCheck> {
     // if the app closed or terminated
     FirebaseMessaging.instance
         .getInitialMessage()
-        .then((RemoteMessage? message)async {
+        .then((RemoteMessage? message) async {
       if (message != null) {
         print('on message open yaaara terminated  ${message.data}');
         if (message.notification != null) {
@@ -256,17 +260,15 @@ class _LoginCheckState extends State<LoginCheck> {
     await tokenState.getAuthToken().then((value) {
       setState(() {
         _authToken = value;
-        // _isLoaded = true;
       });
     });
     print('my token $_authToken');
     await tokenState.getAuthType().then((value) {
       setState(() {
-        _authType = value!.toLowerCase();
-        // _isLoaded = true;
+        _authType = value?.toLowerCase();
       });
     });
-    print('my token $_authType');
+    print('my user type $_authType');
     setState(() {
       _isLoaded = true;
     });
