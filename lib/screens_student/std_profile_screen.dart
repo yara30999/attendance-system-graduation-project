@@ -1,27 +1,24 @@
-import 'package:fast_tende_doctor_app/screens/first_screen.dart';
-import 'package:fast_tende_doctor_app/screens/home_screen.dart';
+import 'package:fast_tende_doctor_app/screens_student/second_screen.dart';
 import 'package:flutter/material.dart';
-import '../models/assestant_model.dart';
+import '../models/student_model.dart';
 import '../models/auth_state.dart';
-import '../models/proffessor_model.dart';
 import '../services/base_client.dart';
-import '../login_screen.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import '../services/signin_or_out.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
 
-  static String id = 'prifile_screen';
+class STDProfileScreen extends StatefulWidget {
+  const STDProfileScreen({super.key});
+  static String id = 'std_prifile_screen';
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<STDProfileScreen> createState() => _STDProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _STDProfileScreenState extends State<STDProfileScreen> {
+
   String? _authToken;
   String? _authType;
+  String? _authId;
   late bool _isLoaded;
   late String name;
   late String email;
@@ -43,8 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-
-  @override
+    @override
   void initState() {
     super.initState();
     loadToken();
@@ -71,50 +67,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     });
     print('my type $_authType');
+    //////////////////////////////////////////////////then get Id.
+    await tokenState.getAuthId().then((value) {
+      setState(() {
+        _authId = value;
+      });
+    });
+    print('my id $_authId');
     fetchProfileData();
   }
 
   void fetchProfileData() async {
-    if (_authType!.toLowerCase() == 'professor') {
+    
       var response = await BaseClient()
           .get(
-              '/professor/', _authToken!, errTxt: 'can\'t load data', showError)
+              '/student/$_authId', _authToken!, errTxt: 'can\'t load data', showError)
           .catchError((err) {
         print('yaraaaaaaaaaa error $err');
       });
       if (response == null) return;
       debugPrint('successful:');
       setState(() {
-        final data = proffessorModelFromJson(response);
-        name = data.professor.name;
-        email = data.professor.email;
-        phone = data.professor.phoneNumber;
-        id = data.professor.id;
+        final data = studentModelFromJson(response);
+        name = data.student.name;
+        email = data.student.email;
+        phone = data.student.phoneNumber;
+        id = data.student.id;
         _isLoaded = true;
       });
-    } else if (_authType!.toLowerCase() == 'assistant') {
-      var response = await BaseClient()
-          .get(
-              '/assistant/', _authToken!, errTxt: 'can\'t load data', showError)
-          .catchError((err) {
-        print('yaraaaaaaaaaa error $err');
-      });
-      if (response == null) return;
-      debugPrint('successful:');
-      setState(() {
-        final data = assestantModelFromJson(response);
-        name = data.assistant.name;
-        email = data.assistant.email;
-        phone = data.assistant.phoneNumber;
-        id = data.assistant.id;
-        _isLoaded = true;
-      });
-    }
+    
   }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -182,7 +167,7 @@ class TopBlueContainer extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, FirstScreen.id);
+              Navigator.pushNamed(context, SecondScreen.id);
             },
             icon: const Icon(
               Icons.arrow_back,
@@ -230,47 +215,6 @@ class ProfilePhoto extends StatelessWidget {
     );
   }
 }
-
-// class InfoDisplay extends StatelessWidget {
-//   const InfoDisplay(
-//       {super.key,
-//       required this.icon,
-//       required this.titleText,
-//       required this.subtitleText});
-//   final IconData? icon;
-//   final String titleText;
-//   final String subtitleText;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox(
-//       height: 65.0,
-//       child: Card(
-//         elevation: 0.0,
-//         child: ListTile(
-//           leading: Icon(
-//             icon,
-//             color: const Color(0xff074E79),
-//             size: 40,
-//           ),
-//           title: Text(
-//             titleText,
-//             style: const TextStyle(
-//                 fontFamily: 'Pacifico', fontSize: 15, color: Color(0xff0D8AD5)),
-//           ),
-//           subtitle: Text(
-//             subtitleText,
-//             style: const TextStyle(
-//                 fontFamily: 'poppins',
-//                 fontSize: 20,
-//                 fontWeight: FontWeight.w100,
-//                 color: Colors.black),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class InfoDisplay extends StatelessWidget {
   const InfoDisplay(

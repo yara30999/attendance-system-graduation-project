@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fast_tende_doctor_app/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'models/auth_state.dart';
-import 'screens/login_screen.dart';
+import 'login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/first_screen.dart';
 import 'screens/camera_screen.dart';
@@ -16,7 +16,14 @@ import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'screens/empty_page.dart';
 import 'screens/home_page.dart';
+import 'screens_student/second_screen.dart';
+import 'screens_student/std_home_screen.dart';
+import 'screens_student/std_attendance_classes_screen.dart';
+import 'screens_student/std_notification_screen.dart';
+import 'screens_student/std_profile_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -36,10 +43,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     title: title,
     body: body,
   );
-  Navigator.pushNamed(
-    navigatorKey.currentState!.context,
-    NotificationScreen.id,
-  );
+  // Navigator.pushNamed(
+  //   navigatorKey.currentState!.context,
+  //   NotificationScreen.id,
+  // );
 }
 
 Future<void> saveToDatabase(orderId, orderDate) async {
@@ -123,6 +130,12 @@ class DoctorApp extends StatelessWidget {
         LoginCheck.id: (context) => const LoginCheck(),
         EmptyPage.id: (context) => const EmptyPage(),
         HomePage.id: (context) => const HomePage(),
+        SecondScreen.id: (context) => const SecondScreen(),
+        STDHomeScreen.id: (context) => const STDHomeScreen(),
+        STDAttendanceClassesScreen.id: (context) =>
+            const STDAttendanceClassesScreen(),
+        STDNotificationScreen.id: (context) => const STDNotificationScreen(),
+        STDProfileScreen.id: (context) => const STDProfileScreen()
       },
     );
   }
@@ -138,6 +151,7 @@ class LoginCheck extends StatefulWidget {
 class _LoginCheckState extends State<LoginCheck> {
   String? _authToken;
   String? _authType;
+  String? _authId;
   late bool _isLoaded;
 
   Future<void> saveToDatabase(String orderId, String orderDate) async {
@@ -148,6 +162,11 @@ class _LoginCheckState extends State<LoginCheck> {
     await tokenState.getAuthType().then((value) {
       setState(() {
         _authType = value?.toLowerCase();
+      });
+    });
+    await tokenState.getAuthId().then((value) {
+      setState(() {
+        _authId = value?.toString();
       });
     });
     await _firestore
@@ -289,7 +308,12 @@ class _LoginCheckState extends State<LoginCheck> {
       if (_authToken == 'empty' || _authToken == '' || _authToken == null) {
         return const LoginScreen();
       } else {
-        return const FirstScreen();
+        if(_authType == 'student'){
+          return const SecondScreen();
+        }else{
+          return const FirstScreen();
+        }
+        
       }
     }
   }

@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/auth_state.dart';
 import '../screens/first_screen.dart';
-import '../screens/login_screen.dart';
+import '../screens_student/second_screen.dart';
+import '../login_screen.dart';
 
 class SignInOrOut {
   void login(BuildContext context, String email, String password) async {
@@ -21,17 +22,27 @@ class SignInOrOut {
         auth = authStateFromJson(response.body);
 
         final authToken = auth.user!.token.toString();
-        final authType = auth.user!.userType.toString();
+        final authType = auth.user!.userType.toString().toLowerCase();
+        final authId = auth.user!.userId.toString();
+        final authName = auth.user!.name.toString();
         print(authToken.toString());
         // save the authToken to shared preferences
         // final tokenState = TokenSaved(); because it is already creaded in auth state file.
         await tokenState.setAuthToken(authToken);
         await tokenState.setAuthtype(authType);
-        print(authType);
-        print(authToken);
+        await tokenState.setAuthId(authId);
+        await tokenState.setAuthName(authName);
+        print('login user type : $authType');
+        print('login user token : $authToken');
+        print('login user id : $authId');
+        print('login user name : $authName');
         // navigate to the first screen
         try {
-          Navigator.pushNamed(context, FirstScreen.id);
+          if (authType == 'student') {
+            Navigator.pushNamed(context, SecondScreen.id);
+          } else {
+            Navigator.pushNamed(context, FirstScreen.id);
+          }
         } catch (e) {
           print('can not navigate yaraaaaaaaaaaaaaaaaa');
         }
@@ -75,6 +86,8 @@ class SignInOrOut {
     try {
       await tokenState.setAuthToken('empty');
       await tokenState.setAuthtype('empty');
+      await tokenState.setAuthId('empty');
+      await tokenState.setAuthName('empty');
       Navigator.pushNamed(context, LoginScreen.id);
     } catch (e) {
       showDialog(

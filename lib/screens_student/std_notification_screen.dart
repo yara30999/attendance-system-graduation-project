@@ -1,21 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fast_tende_doctor_app/screens_student/second_screen.dart';
 import 'package:flutter/material.dart';
-import '../models/auth_state.dart';
-import 'first_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../componant/appbar_custom.dart';
+import '../models/auth_state.dart';
 
 final _firestore = FirebaseFirestore.instance;
-
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({super.key});
-
-  static String id = 'notification_screen';
+class STDNotificationScreen extends StatefulWidget {
+  const STDNotificationScreen({super.key});
+  static String id = 'std_notification_screen';
 
   @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
+  State<STDNotificationScreen> createState() => _STDNotificationScreenState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
+class _STDNotificationScreenState extends State<STDNotificationScreen> {
   List<Map<String, String>> notificationList = [
     {'label': 'your attendance have been checked', 'date': '08 May 2022'},
     {'label': 'you have ecommerce section', 'date': '08 May 2022'},
@@ -61,6 +59,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +71,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           AppbarCustom(
             label: 'Notification',
             onpress: () {
-              Navigator.pushNamed(context, FirstScreen.id);
+              Navigator.pushNamed(context, SecondScreen.id);
             },
           ),
           const SizedBox(height: 12.0),
@@ -134,6 +133,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 }
 
+
 class NotificationNumber extends StatelessWidget {
   const NotificationNumber({super.key, required this.myStream});
   final Stream<QuerySnapshot<Object?>>? myStream;
@@ -153,7 +153,7 @@ class NotificationNumber extends StatelessWidget {
               Text(' today.')
             ],
           );
-        }else{
+        } else {
           // Get the number of documents in the collection
           int count = snapshot.data!.size;
           // Build your UI using the count
@@ -168,7 +168,6 @@ class NotificationNumber extends StatelessWidget {
             ],
           );
         }
-        
       },
     );
   }

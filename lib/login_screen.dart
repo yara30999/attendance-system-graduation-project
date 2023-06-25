@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fast_tende_doctor_app/constants.dart';
-import '../services/signin_or_out.dart';
+import 'services/signin_or_out.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

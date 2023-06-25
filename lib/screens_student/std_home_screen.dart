@@ -1,44 +1,43 @@
+import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
-import '../componant/classes_tab.dart';
-import '../componant/sections_tab.dart';
+import '../componant/search_field.dart';
 import '../componant/user_photo.dart';
 import '../constants.dart';
-import 'package:date_picker_timeline/date_picker_timeline.dart';
-import '../componant/search_field.dart';
-import '../componant/reusable_card.dart';
+import '../componant_std/classes_tab_2.dart';
+import '../componant_std/sections_tap_2.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-  static String id = 'home_screen';
+class STDHomeScreen extends StatefulWidget {
+  const STDHomeScreen({super.key});
+  static String id = 'std_home_screen';
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<STDHomeScreen> createState() => _STDHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late int _selectedDate; // for the calendar
+class _STDHomeScreenState extends State<STDHomeScreen> {
+    late int _selectedDate; // for the calendar
 
 // <<<1>>>>  from here ......................................
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
-  List<LectureData> lectureList = [
-    LectureData(name: 'info lecture', time: '12:30'),
-    LectureData(name: 'ecommerce1 section', time: '12:30'),
-    LectureData(name: 'math lecture', time: '12:30'),
-    LectureData(name: 'ecommerce2 lecture', time: '12:30'),
-    LectureData(name: 'ecommerce3 lecture', time: '12:30'),
-    LectureData(name: 'mobile lecture', time: '12:30'),
-    LectureData(name: 'security lecture', time: '12:30'),
+  List<LectureDataSTD> lectureList = [
+    LectureDataSTD(name: 'info lecture', time: '12:30'),
+    LectureDataSTD(name: 'ecommerce1 section', time: '12:30'),
+    LectureDataSTD(name: 'math lecture', time: '12:30'),
+    LectureDataSTD(name: 'ecommerce2 lecture', time: '12:30'),
+    LectureDataSTD(name: 'ecommerce3 lecture', time: '12:30'),
+    LectureDataSTD(name: 'mobile lecture', time: '12:30'),
+    LectureDataSTD(name: 'security lecture', time: '12:30'),
   ];
-  List<SectionData> sectionlist = [
-    SectionData(name: 'security section', time: '12:30'),
-    SectionData(name: 'ecommerce section', time: '12:30'),
-    SectionData(name: 'ecommerce section', time: '12:30'),
-    SectionData(name: 'ecommerce section', time: '12:30'),
+  List<SectionDataSTD> sectionlist = [
+    SectionDataSTD(name: 'security section', time: '12:30'),
+    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
+    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
+    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
   ];
 
-  List<LectureData> _filteredData = [];
+  List<LectureDataSTD> _filteredData = [];
 
   void _updateFilteredData(String searchTerm) {
     setState(() {
@@ -159,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     DatePicker(
-                      DateTime(2023, 6, 6),
+                      DateTime.now(),
                       initialSelectedDate: DateTime.now(),
                       selectionColor: const Color(0xff0d8ad5),
                       selectedTextColor: Colors.white,
@@ -209,8 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 150.0,
                             child: Center(
                               child: TabBarView(children: [
-                                ClassesTab(lecture: _filteredData),
-                                SectionsTab(sections: sectionlist),
+                                ClassesTabSTD(lecture: _filteredData),
+                                SectionsTabSTD(sections: sectionlist),
                               ]),
                             ),
                           )
