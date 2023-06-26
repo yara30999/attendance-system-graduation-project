@@ -113,6 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchLectureData() async {
+    if (_authType == 'assistant') {
+      setState(() {
+        lectureList.clear();
+        _lecIsLoaded = true;
+      });
+      return;
+    }
     var response = await BaseClient()
         .get(
             '/filterd-lectures/$_selectedDate',
@@ -144,15 +151,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchSectionsData() async {
+    final String endpoint;
+    if (_authType == 'assistant') {
+      endpoint = 'filtered-sections';
+    } else {
+      endpoint = 'professor-sections';
+    }
     var response = await BaseClient()
         .get(
-            '/professor-sections/$_selectedDate',
+            '/$endpoint/$_selectedDate',
             _authToken!,
             errTxt: 'can\'t load sections data',
             showError)
         .catchError((err) {
       print('yaraaaaaaaaaa error $err');
     });
+
     if (response == null) return;
     final data = filteredProfissorSectionsModelFromJson(response);
     final sectionId = data.sections?.id;
