@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'reusable_card.dart';
 
 class SectionData {
-  late final String name;
-  late final String time;
+  late final String? secName;
+  late final String? secId;
+  late final String? userName;
+  late final String? secTime;
 
-  SectionData({required this.name, required this.time});
+  SectionData(
+      {required this.secName,
+      required this.secId,
+      required this.userName,
+      required this.secTime});
 }
 // List<SectionData>sectionlist=[
 //   SectionData(name: 'security section', time: '12:30'),
@@ -37,8 +43,10 @@ class SectionsTab extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return ReusableCard(
-            lectureName: sections![index].name,
-            lectureTime: sections![index].time,
+            lectureName: sections![index].secName,
+            lectureTime: sections![index].secTime,
+            lectureId: sections![index].secId,
+            userName: sections![index].userName,
           );
         });
   }

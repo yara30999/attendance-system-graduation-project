@@ -14,7 +14,6 @@ import 'screens/notification_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'screens/empty_page.dart';
 import 'screens/home_page.dart';
 import 'screens_student/second_screen.dart';
 import 'screens_student/std_home_screen.dart';
@@ -22,8 +21,9 @@ import 'screens_student/std_attendance_classes_screen.dart';
 import 'screens_student/std_notification_screen.dart';
 import 'screens_student/std_profile_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -71,7 +71,7 @@ final _firestore = FirebaseFirestore.instance;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await initializeDateFormatting();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -128,7 +128,6 @@ class DoctorApp extends StatelessWidget {
         ProfileScreen.id: (context) => const ProfileScreen(),
         NotificationScreen.id: (context) => const NotificationScreen(),
         LoginCheck.id: (context) => const LoginCheck(),
-        EmptyPage.id: (context) => const EmptyPage(),
         HomePage.id: (context) => const HomePage(),
         SecondScreen.id: (context) => const SecondScreen(),
         STDHomeScreen.id: (context) => const STDHomeScreen(),

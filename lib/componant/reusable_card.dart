@@ -6,11 +6,15 @@ class ReusableCard extends StatelessWidget {
   const ReusableCard({
     super.key,
     required this.lectureName,
-    required this.lectureTime
+    required this.lectureTime,
+    required this.lectureId,
+    required this.userName
   });
 
-  final String lectureName;
+  final String? lectureName;
   final dynamic lectureTime;
+  final String? lectureId;
+  final String? userName;
 
   @override
   Widget build(BuildContext context) {
@@ -45,16 +49,16 @@ class ReusableCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                lectureName.toLowerCase(),
+                lectureName!.toUpperCase(),
                 style: const TextStyle(
                     color: Color(0xff074E79),
                     fontSize: 18.0,
                     fontFamily: 'poppins',
                     fontWeight: FontWeight.w500),
               ),
-              const Text(
-                'Dr. mohammed ahmed',
-                style: TextStyle(
+              Text(
+                'Dr. $userName',
+                style: const TextStyle(
                     color: Color.fromARGB(255, 100, 100, 101),
                     fontSize: 13.0,
                     fontFamily: 'poppins',
@@ -68,6 +72,7 @@ class ReusableCard extends StatelessWidget {
                 ),
                 onTap: () {
                   print('camera (1) clicked');
+                  // use the lec id here ya yaaaaaaaaaara
                   Navigator.pushNamed(context, CameraScreen.id);
                 },
               ),
