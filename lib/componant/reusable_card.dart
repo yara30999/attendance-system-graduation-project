@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import '../screens/camera_screen.dart';
 
 class ReusableCard extends StatelessWidget {
-  const ReusableCard({
-    super.key,
-    required this.lectureName,
-    required this.lectureTime,
-    required this.lectureId,
-    required this.userName
-  });
+  const ReusableCard(
+      {super.key,
+      required this.lectureName,
+      required this.lectureTime,
+      required this.lectureId,
+      required this.userName});
 
   final String? lectureName;
   final dynamic lectureTime;
@@ -57,7 +56,7 @@ class ReusableCard extends StatelessWidget {
                     fontWeight: FontWeight.w500),
               ),
               Text(
-                'Dr. $userName',
+                userName!,
                 style: const TextStyle(
                     color: Color.fromARGB(255, 100, 100, 101),
                     fontSize: 13.0,

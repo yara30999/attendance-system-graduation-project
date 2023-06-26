@@ -24,7 +24,6 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
 
   bool _notSaved = true;
 
-
   List<StudentItem> tasks = [
     StudentItem(name: 'yara nasser elden'),
     StudentItem(name: 'ahmed mohammed ali'),
@@ -208,18 +207,20 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                       //       //     ),
                       //       //   ),
                       //       // ),
-                            // Container(
-                            //   height: 200.0,
-                            //   child: StudentList(
-                            //                         students: _filteredData,
-                            //                       ),
-                            // ),
+                      // Container(
+                      //   height: 200.0,
+                      //   child: StudentList(
+                      //                         students: _filteredData,
+                      //                       ),
+                      // ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 10.0,),
+                        const SizedBox(
+                          height: 10.0,
+                        ),
                         const Text(
                           'Student List',
                           style: TextStyle(
@@ -374,7 +375,7 @@ class StudentTile extends StatelessWidget {
             style: const TextStyle(
                 // decoration:
                 //     isChecked == true ? TextDecoration.lineThrough : null
-                    ),
+                ),
           ),
           Switch(
             value: isChecked!,

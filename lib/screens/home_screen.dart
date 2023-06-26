@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = '2023-6-20';
     _filteredData = lectureList;
     loadToken();
   }
@@ -75,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
     // load the authToken from shared preferences
     // final tokenState = TokenSaved();
     setState(() {
-      _selectedDate = '2023-6-20';
       _isLoaded = false;
     });
     //////////////////////////////////////////////////get token first.
@@ -136,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final lectureTime = data.lectures == null
         ? null
         : DateFormat('H:mm').format(data.lectures!.date);
+    final personName = 'Dr. $_authName';
     setState(() {
       lectureList.clear();
       if (data.lectures != null) {
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
           lecId: lectureId,
           lecName: lectureName,
           lecTime: lectureTime,
-          userName: _authName,
+          userName: personName,
         ));
       }
       _lecIsLoaded = true;
@@ -174,6 +175,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final sectionTime = data.sections == null
         ? null
         : DateFormat('H:mm').format(data.sections!.date);
+    final personName =
+        _authType == 'assistant' ? 'Eng. $_authName' : 'Dr. $_authName';
     setState(() {
       sectionlist.clear();
       if (data.sections != null) {
@@ -181,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
           secId: sectionId,
           secName: sectionName,
           secTime: sectionTime,
-          userName: _authName,
+          userName: personName,
         ));
       }
       _secIsLoaded = true;

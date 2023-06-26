@@ -1,5 +1,28 @@
 import 'package:flutter/material.dart';
 import '../screens/attendance_list.dart';
+import '../models/filter_lec_model.dart';
+class CardData {
+  late final String? lecName;
+  late final String? lecId;
+  late final String? userName;
+  late final String? lecStart;
+  late final String? lecEnd;
+  late final String? total;
+  late final String? here;
+  late final String? absence;
+  late final List<dynamic>? attendList;
+
+  CardData(
+      {required this.lecName,
+      required this.lecId,
+      required this.userName,
+      required this.lecStart,
+      required this.lecEnd,
+      required this.total,
+      required this.here,
+      required this.absence,
+      this.attendList});
+}
 
 class ClassesView extends StatelessWidget {
   const ClassesView({
@@ -13,13 +36,13 @@ class ClassesView extends StatelessWidget {
     required this.absent,
   });
 
-  final String lectureName;
-  final String doctorName;
-  final String startDate;
-  final String endDate;
-  final String total;
-  final String here;
-  final String absent;
+  final String? lectureName;
+  final String? doctorName;
+  final String? startDate;
+  final String? endDate;
+  final String? total;
+  final String? here;
+  final String? absent;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +90,7 @@ class ClassesView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      lectureName,
+                      lectureName!,
                       style: const TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.w600,
@@ -75,7 +98,7 @@ class ClassesView extends StatelessWidget {
                     ),
                     const SizedBox(height: 2.0),
                     Text(
-                      doctorName,
+                      doctorName!,
                       style: const TextStyle(
                         fontSize: 12.0,
                         fontWeight: FontWeight.w400,
@@ -112,80 +135,86 @@ class ClassesView extends StatelessWidget {
                   ),
                 ),
               ),
-              const Divider(
-                thickness: 1.0,
-                color: Colors.black,
+              Visibility(
+                visible: total == '0' ? false : true,
+                child: const Divider(
+                  thickness: 1.0,
+                  color: Colors.black,
+                ),
               ),
-              // Text(
-              //   '$here Out of $total are here \n$absent Out of $total are Absent',
-              //   style: const TextStyle(
-              //       fontSize: 16.0,
-              //       fontWeight: FontWeight.w400,
-              //       color: Colors.black),
-              // ),
-              Row(
-                children: [
-                  Text(
-                    here,
-                    style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
+              Visibility(
+                visible: total == '0' ? false : true,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            here!,
+                            style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                          const Text(
+                            ' Out of ',
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                          Text(
+                            total!,
+                            style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                          const Text(
+                            ' are here ',
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            absent!,
+                            style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                          const Text(
+                            ' Out of ',
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                          Text(
+                            total!,
+                            style: const TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                          const Text(
+                            ' are Absent ',
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const Text(
-                    ' Out of ',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ),
-                  Text(
-                    total,
-                    style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const Text(
-                    ' are here ',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    absent,
-                    style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const Text(
-                    ' Out of ',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ),
-                  Text(
-                    total,
-                    style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  const Text(
-                    ' are Absent ',
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
-                  ),
-                ],
+                ),
               ),
               const SizedBox(
                 height: 10.0,
