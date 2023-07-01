@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 
 class ReusableCardSTD extends StatelessWidget {
   const ReusableCardSTD(
-      {super.key, required this.lectureName, required this.lectureTime});
+      {super.key,
+      required this.lectureName,
+      required this.lectureTime,
+      required this.lectureId,
+      required this.userName});
 
-  final String lectureName;
+  final String? lectureName;
   final dynamic lectureTime;
-
+  final String? lectureId;
+  final String? userName;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -42,16 +47,16 @@ class ReusableCardSTD extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                lectureName.toLowerCase(),
+                lectureName!.toUpperCase(),
                 style: const TextStyle(
                     color: Color(0xff074E79),
                     fontSize: 18.0,
                     fontFamily: 'poppins',
                     fontWeight: FontWeight.w500),
               ),
-              const Text(
-                'Dr. mohammed ahmed',
-                style: TextStyle(
+              Text(
+                userName!,
+                style: const TextStyle(
                     color: Color.fromARGB(255, 100, 100, 101),
                     fontSize: 13.0,
                     fontFamily: 'poppins',

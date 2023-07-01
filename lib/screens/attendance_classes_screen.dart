@@ -240,7 +240,8 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
     final sectionEnd = data.sections == null
         ? null
         : DateFormat('H:mm').format(incrementedTime!);
-    final List<model.AttendanceList>? attendlist = data.sections?.attendanceList;
+    final List<model.AttendanceList>? attendlist =
+        data.sections?.attendanceList;
     final total = attendlist?.length.toString();
     final String? here;
     final String? absence;

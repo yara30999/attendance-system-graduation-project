@@ -1,10 +1,15 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../componant/search_field.dart';
 import '../componant/user_photo.dart';
 import '../constants.dart';
 import '../componant_std/classes_tab_2.dart';
 import '../componant_std/sections_tap_2.dart';
+import '../models/auth_state.dart';
+import '../models/std_lec_model.dart';
+import '../models/std_sec_model.dart';
+import '../services/base_client.dart';
 
 class STDHomeScreen extends StatefulWidget {
   const STDHomeScreen({super.key});
@@ -15,26 +20,48 @@ class STDHomeScreen extends StatefulWidget {
 }
 
 class _STDHomeScreenState extends State<STDHomeScreen> {
-    late int _selectedDate; // for the calendar
+  late String _selectedDate; // for the calendar
+  String? _authToken;
+  String? _authType;
+  String? _authName;
+  late bool _isLoaded;
+  bool _lecIsLoaded = false;
+  bool _secIsLoaded = false;
+
+  showError(String data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error...'),
+        content: Text(data),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
 
 // <<<1>>>>  from here ......................................
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
   List<LectureDataSTD> lectureList = [
-    LectureDataSTD(name: 'info lecture', time: '12:30'),
-    LectureDataSTD(name: 'ecommerce1 section', time: '12:30'),
-    LectureDataSTD(name: 'math lecture', time: '12:30'),
-    LectureDataSTD(name: 'ecommerce2 lecture', time: '12:30'),
-    LectureDataSTD(name: 'ecommerce3 lecture', time: '12:30'),
-    LectureDataSTD(name: 'mobile lecture', time: '12:30'),
-    LectureDataSTD(name: 'security lecture', time: '12:30'),
+    // LectureDataSTD(name: 'info lecture', time: '12:30'),
+    // LectureDataSTD(name: 'ecommerce1 section', time: '12:30'),
+    // LectureDataSTD(name: 'math lecture', time: '12:30'),
+    // LectureDataSTD(name: 'ecommerce2 lecture', time: '12:30'),
+    // LectureDataSTD(name: 'ecommerce3 lecture', time: '12:30'),
+    // LectureDataSTD(name: 'mobile lecture', time: '12:30'),
+    // LectureDataSTD(name: 'security lecture', time: '12:30'),
   ];
   List<SectionDataSTD> sectionlist = [
-    SectionDataSTD(name: 'security section', time: '12:30'),
-    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
-    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
-    SectionDataSTD(name: 'ecommerce section', time: '12:30'),
+    // SectionDataSTD(name: 'security section', time: '12:30'),
+    // SectionDataSTD(name: 'ecommerce section', time: '12:30'),
+    // SectionDataSTD(name: 'ecommerce section', time: '12:30'),
+    // SectionDataSTD(name: 'ecommerce section', time: '12:30'),
   ];
 
   List<LectureDataSTD> _filteredData = [];
@@ -43,7 +70,7 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
     setState(() {
       _filteredData = lectureList
           .where((item) =>
-              item.name.toLowerCase().contains(searchTerm.toLowerCase()))
+              item.lecName!.toLowerCase().contains(searchTerm.toLowerCase()))
           .toList();
     });
   }
@@ -51,7 +78,138 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = '2023-6-20';
     _filteredData = lectureList;
+    loadToken();
+  }
+
+  Future<void> loadToken() async {
+    // load the authToken from shared preferences
+    // final tokenState = TokenSaved();
+    setState(() {
+      _isLoaded = false;
+    });
+    //////////////////////////////////////////////////get token first.
+    await tokenState.getAuthToken().then((value) {
+      setState(() {
+        _authToken = value;
+      });
+    });
+    print('my token $_authToken');
+    //////////////////////////////////////////////////then get type.
+    await tokenState.getAuthType().then((value) {
+      setState(() {
+        _authType = value;
+      });
+    });
+    print('my type $_authType');
+    //////////////////////////////////////////////////then get name.
+    await tokenState.getAuthName().then((value) {
+      setState(() {
+        _authName = value;
+      });
+    });
+    print('my name $_authName');
+    checkLoadedData();
+  }
+
+  void checkLoadedData() async {
+    await fetchLectureData();
+    await fetchSectionsData();
+    if (_lecIsLoaded && _secIsLoaded) {
+      setState(() {
+        _isLoaded = true;
+      });
+    }
+  }
+
+  Future<void> fetchLectureData() async {
+    setState(() {
+      lectureList.clear();
+    });
+    var response = await BaseClient()
+        .get(
+            '/student-lectures/$_selectedDate',
+            _authToken!,
+            errTxt: 'can\'t load lecture data',
+            showError)
+        .catchError((err) {
+      print('yaraaaaaaaaaa error $err');
+    });
+    if (response == null) return;
+
+    final data = studentLectureModelFromJson(response);
+    if (data.lectures != null) {
+      for (int i = 0; i < data.lectures!.length; i++) {
+        final lectureId = data.lectures?[i].id;
+        final lectureName = data.lectures?[i].subjectId?.name;
+        final lectureOwner = 'Dr. ${data.lectures?[i].profId?.name}';
+        final lectureTime = data.lectures == null
+            ? null
+            : DateFormat('H:mm').format(data.lectures![i].date);
+
+        setState(() {
+          // lectureList.clear();
+
+          lectureList.add(LectureDataSTD(
+            lecId: lectureId,
+            lecName: lectureName,
+            lecTime: lectureTime,
+            userName: lectureOwner,
+          ));
+
+          // _lecIsLoaded = true;
+        });
+      }
+    }
+    setState(() {
+      _lecIsLoaded = true;
+    });
+  }
+
+  Future<void> fetchSectionsData() async {
+    setState(() {
+      sectionlist.clear();
+    });
+    var response = await BaseClient()
+        .get(
+            '/student-sections/$_selectedDate',
+            _authToken!,
+            errTxt: 'can\'t load sections data',
+            showError)
+        .catchError((err) {
+      print('yaraaaaaaaaaa error $err');
+    });
+
+    if (response == null) return;
+
+    final data = studentSectionModelFromJson(response);
+    if (data.section != null) {
+      for (int i = 0; i < data.section!.length; i++) {
+        final sectionId = data.section?[i].id;
+        final sectionName = data.section?[i].subjectId?.name;
+        final sectionOwner = 'Eng. ${data.section?[i].assistId?.name}';
+        final sectionTime = data.section == null
+            ? null
+            : DateFormat('H:mm').format(data.section![i].date);
+
+        setState(() {
+          //sectionlist.clear();
+
+          sectionlist.add(SectionDataSTD(
+            secId: sectionId,
+            secName: sectionName,
+            secTime: sectionTime,
+            userName: sectionOwner,
+          ));
+
+          //_secIsLoaded = true;
+        });
+      }
+    }
+    setState(() {
+      _secIsLoaded = true;
+    });
   }
 
   @override
@@ -158,8 +316,8 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                 child: Column(
                   children: [
                     DatePicker(
-                      DateTime.now(),
-                      initialSelectedDate: DateTime.now(),
+                      DateTime(2023, 6, 19),
+                      initialSelectedDate: DateTime(2023, 6, 20),
                       selectionColor: const Color(0xff0d8ad5),
                       selectedTextColor: Colors.white,
                       monthTextStyle: const TextStyle(
@@ -182,9 +340,11 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                       ),
                       onDateChange: (selectedDate) {
                         setState(() {
-                          _selectedDate = selectedDate.day;
+                          _selectedDate =
+                              DateFormat("yyyy-MM-dd").format(selectedDate);
                           print(_selectedDate);
                         });
+                        checkLoadedData();
                       },
                     ),
                     DefaultTabController(

@@ -2,25 +2,18 @@ import 'package:flutter/material.dart';
 import 'reusable_card_2.dart';
 
 class SectionDataSTD {
-  late final String name;
-  late final String time;
+  late final String? secName;
+  late final String? secId;
+  late final String? userName;
+  late final String? secTime;
 
-  SectionDataSTD({required this.name, required this.time});
+  SectionDataSTD(
+      {required this.secName,
+      required this.secId,
+      required this.userName,
+      required this.secTime});
 }
-// List<SectionData>sectionlist=[
-//   SectionData(name: 'security section', time: '12:30'),
-//   SectionData(name: 'ecommerce section', time: '12:30'),
-//   SectionData(name: 'ecommerce section', time: '12:30'),
-//   SectionData(name: 'ecommerce section', time: '12:30'),
-// ];
-// List<Map<String, String>> sectionsList = [
-//   {'lectureName': 'security section', 'time': '12:30'},
-//   {'lectureName': 'ecommerce section', 'time': '12:30'},
-//   {'lectureName': 'info section', 'time': '12:30'},
-//   {'lectureName': 'math section', 'time': '12:30'},
-//   {'lectureName': 'mobile section', 'time': '12:30'},
-//   {'lectureName': 'control section', 'time': '12:30'},
-// ];
+
 
 class SectionsTabSTD extends StatelessWidget {
   const SectionsTabSTD({
@@ -37,8 +30,10 @@ class SectionsTabSTD extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return ReusableCardSTD(
-            lectureName: sections![index].name,
-            lectureTime: sections![index].time,
+            lectureName: sections![index].secName,
+            lectureTime: sections![index].secTime,
+            lectureId: sections![index].secId,
+            userName: sections![index].userName,
           );
         });
   }

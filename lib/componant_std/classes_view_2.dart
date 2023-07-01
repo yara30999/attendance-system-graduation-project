@@ -2,20 +2,37 @@ import 'package:flutter/material.dart';
 
 enum status { checked, unchecked, waiting }
 
+class CardData {
+  late final String? lecName;
+  late final String? lecId;
+  late final String? userName;
+  late final String? lecStart;
+  late final String? lecEnd;
+  late final String? studentStatus;
+
+  CardData(
+      {required this.lecName,
+      required this.lecId,
+      required this.userName,
+      required this.lecStart,
+      required this.lecEnd,
+      required this.studentStatus});
+}
+
 class ClassesViewSTD extends StatelessWidget {
   const ClassesViewSTD(
       {super.key,
       required this.lectureName,
-      required this.doctorDay,
+      required this.userName,
       required this.startDate,
       required this.endDate,
       required this.status});
 
-  final String lectureName;
-  final String doctorDay;
-  final String startDate;
-  final String endDate;
-  final String status;
+  final String? lectureName;
+  final String? userName;
+  final String? startDate;
+  final String? endDate;
+  final String? status;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +67,7 @@ class ClassesViewSTD extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    lectureName,
+                    lectureName!,
                     style: const TextStyle(
                         fontSize: 18.0,
                         fontWeight: FontWeight.w600,
@@ -58,7 +75,7 @@ class ClassesViewSTD extends StatelessWidget {
                   ),
                   const SizedBox(height: 2.0),
                   Text(
-                    doctorDay,
+                    userName!,
                     style: const TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w400,
