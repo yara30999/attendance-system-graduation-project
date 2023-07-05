@@ -120,6 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return;
     }
+    setState(() {
+      lectureList.clear();
+    });
     var response = await BaseClient()
         .get(
             '/filterd-lectures/$_selectedDate',
@@ -131,22 +134,27 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     if (response == null) return;
     final data = filteredLectureModelFromJson(response);
-    final lectureId = data.lectures?.id;
-    final lectureName = data.lectures?.subjectId?.name;
-    final lectureTime = data.lectures == null
-        ? null
-        : DateFormat('H:mm').format(data.lectures!.date);
-    final personName = 'Dr. $_authName';
-    setState(() {
-      lectureList.clear();
-      if (data.lectures != null) {
-        lectureList.add(LectureData(
-          lecId: lectureId,
-          lecName: lectureName,
-          lecTime: lectureTime,
-          userName: personName,
-        ));
+    if (data.lectures != null) {
+      for (int i = 0; i < data.lectures!.length; i++) {
+        final lectureId = data.lectures?[i].id;
+        final lectureName = data.lectures?[i].subjectId?.name;
+        final lectureTime = data.lectures == null
+            ? null
+            : DateFormat('H:mm').format(data.lectures![i].date);
+        final personName = 'Dr. $_authName';
+        setState(() {
+          if (data.lectures != null) {
+            lectureList.add(LectureData(
+              lecId: lectureId,
+              lecName: lectureName,
+              lecTime: lectureTime,
+              userName: personName,
+            ));
+          }
+        });
       }
+    }
+    setState(() {
       _lecIsLoaded = true;
     });
   }
@@ -158,6 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       endpoint = 'professor-sections';
     }
+    setState(() {
+      sectionlist.clear();
+    });
     var response = await BaseClient()
         .get(
             '/$endpoint/$_selectedDate',
@@ -167,26 +178,30 @@ class _HomeScreenState extends State<HomeScreen> {
         .catchError((err) {
       print('yaraaaaaaaaaa error $err');
     });
-
     if (response == null) return;
     final data = filteredProfissorSectionsModelFromJson(response);
-    final sectionId = data.sections?.id;
-    final sectionName = data.sections?.subjectId?.name;
-    final sectionTime = data.sections == null
-        ? null
-        : DateFormat('H:mm').format(data.sections!.date);
-    final personName =
-        _authType == 'assistant' ? 'Eng. $_authName' : 'Dr. $_authName';
-    setState(() {
-      sectionlist.clear();
-      if (data.sections != null) {
-        sectionlist.add(SectionData(
-          secId: sectionId,
-          secName: sectionName,
-          secTime: sectionTime,
-          userName: personName,
-        ));
+    if (data.sections != null) {
+      for (int i = 0; i < data.sections!.length; i++) {
+        final sectionId = data.sections?[i].id;
+        final sectionName = data.sections?[i].subjectId?.name;
+        final sectionTime = data.sections == null
+            ? null
+            : DateFormat('H:mm').format(data.sections![i].date);
+        final personName =
+            _authType == 'assistant' ? 'Eng. $_authName' : 'Dr. $_authName';
+        setState(() {
+          if (data.sections != null) {
+            sectionlist.add(SectionData(
+              secId: sectionId,
+              secName: sectionName,
+              secTime: sectionTime,
+              userName: personName,
+            ));
+          }
+        });
       }
+    }
+    setState(() {
       _secIsLoaded = true;
     });
   }
@@ -224,30 +239,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // 1) digital clock
-                        kDigitalClockStyle,
+                      children: const [
+                        // 1) digital clock was here
+                        Text(
+                          'Welcome Back',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500),
+                        ),
                         // 2) profile photo
-                        const UserPhoto(
-                          img: 'images/user1.png',
-                          rounded: false,
+                        SizedBox(
+                          height: 30.0,
+                          width: 30.0,
+                          child: UserPhoto(
+                            img: 'images/user1.png',
+                            rounded: false,
+                          ),
                         ),
                       ],
                     ),
-                    //const SizedBox(height: 10.0),
-                    const Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    // const SizedBox(height: 12.0),
                     const Text(
                       'Let\'s find',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30.0,
+                          fontSize: 20.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
@@ -255,11 +271,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Your next class!',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30.0,
+                          fontSize: 20.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
-                    // const SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     // 3) search field
                     SearchField(
                       hintText: 'Search Class...',
@@ -344,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ]),
                           ),
                           SizedBox(
-                            height: 150.0,
+                            height: 250.0,
                             child: Center(
                               child: TabBarView(children: [
                                 ClassesTab(lecture: _filteredData),

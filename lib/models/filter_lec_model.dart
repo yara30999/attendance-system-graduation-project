@@ -12,13 +12,13 @@ String filteredLectureModelToJson(FilteredLectureModel data) =>
 
 class FilteredLectureModel {
   String? message;
-  Lectures? lectures;
-  String? status;
+  List<Lecture>? lectures;
+  
 
   FilteredLectureModel({
     this.message,
     this.lectures,
-    this.status,
+    
   });
 
   factory FilteredLectureModel.fromJson(Map<String, dynamic> json) =>
@@ -26,47 +26,55 @@ class FilteredLectureModel {
         message: json["message"],
         //lectures: Lectures.fromJson(json["lectures"]),
         lectures: json["lectures"] != null
-            ? Lectures.fromJson(json["lectures"])
+            ? List<Lecture>.from(json["lectures"].map((x) => Lecture.fromJson(x)))
             : null,
-        status: json["status"],
+        
       );
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "lectures": lectures?.toJson(),
-        "status": status,
+        "lectures": List<dynamic>.from(lectures!.map((x) => x.toJson())),
+        
       };
 }
 
-class Lectures {
+class Lecture {
   String? id;
   SubjectId? subjectId;
   String? profId;
   List<String>? attendanceImages;
   DateTime date;
-  int? v;
+  bool notified;
   List<AttendanceList>? attendanceList;
+  int? v;
+  String status;
+  
 
-  Lectures({
+  Lecture({
     this.id,
     this.subjectId,
     this.profId,
     this.attendanceImages,
     required this.date,
-    this.v,
+    required this.notified,
     this.attendanceList,
+    this.v,
+    required this.status
+    
   });
 
-  factory Lectures.fromJson(Map<String, dynamic> json) => Lectures(
+  factory Lecture.fromJson(Map<String, dynamic> json) => Lecture(
         id: json["_id"],
         subjectId: SubjectId.fromJson(json["subjectId"]),
         profId: json["profId"],
         attendanceImages:
             List<String>.from(json["attendanceImages"].map((x) => x)),
         date: DateTime.parse(json["date"]),
-        v: json["__v"],
+        notified: json["notified"],
         attendanceList: List<AttendanceList>.from(
             json["attendanceList"].map((x) => AttendanceList.fromJson(x))),
+        v: json["__v"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -75,9 +83,11 @@ class Lectures {
         "profId": profId,
         "attendanceImages": List<dynamic>.from(attendanceImages!.map((x) => x)),
         "date": date.toIso8601String(),
-        "__v": v,
+        "notified": notified,
         "attendanceList":
             List<dynamic>.from(attendanceList!.map((x) => x.toJson())),
+        "__v": v,
+        "status": status,
       };
 }
 

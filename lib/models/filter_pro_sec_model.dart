@@ -14,32 +14,32 @@ String filteredProfissorSectionsModelToJson(
 
 class FilteredProfissorSectionsModel {
   String? message;
-  Sections? sections;
-  String? status;
+  List<Section>? sections;
+  
 
   FilteredProfissorSectionsModel({
     this.message,
     this.sections,
-    this.status,
+    
   });
 
   factory FilteredProfissorSectionsModel.fromJson(Map<String, dynamic> json) =>
       FilteredProfissorSectionsModel(
         message: json["message"],
         sections: json["sections"] != null
-            ? Sections.fromJson(json["sections"])
+            ? List<Section>.from(json["sections"].map((x) => Section.fromJson(x)))
             : null,
-        status: json["status"],
+        
       );
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "sections": sections?.toJson(),
-        "status": status,
+        "sections": List<dynamic>.from(sections!.map((x) => x.toJson())),
+        
       };
 }
 
-class Sections {
+class Section {
   String? id;
   SubjectId? subjectId;
   String? assistId;
@@ -47,8 +47,9 @@ class Sections {
   List<AttendanceList>? attendanceList;
   DateTime date;
   int? v;
+  String status;
 
-  Sections({
+  Section({
     this.id,
     this.subjectId,
     this.assistId,
@@ -56,9 +57,10 @@ class Sections {
     this.attendanceList,
     required this.date,
     this.v,
+    required this.status,
   });
 
-  factory Sections.fromJson(Map<String, dynamic> json) => Sections(
+  factory Section.fromJson(Map<String, dynamic> json) => Section(
         id: json["_id"],
         subjectId: SubjectId.fromJson(json["subjectId"]),
         assistId: json["assistId"],
@@ -68,6 +70,7 @@ class Sections {
             json["attendanceList"].map((x) => AttendanceList.fromJson(x))),
         date: DateTime.parse(json["date"]),
         v: json["__v"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -79,6 +82,7 @@ class Sections {
             List<dynamic>.from(attendanceList!.map((x) => x.toJson())),
         "date": date.toIso8601String(),
         "__v": v,
+        "status": status,
       };
 }
 

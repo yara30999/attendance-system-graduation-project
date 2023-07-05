@@ -107,33 +107,58 @@ class ClassesView extends StatelessWidget {
                   ],
                 ),
               ),
-              ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-                child: Container(
-                  width: 160.0,
-                  height: 33.0,
-                  color: const Color(0xffF3F3F3),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Start $startDate',
-                        style: const TextStyle(
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 80.0,
+                    height: 33.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xaae0e0e0),
+                        width: 1.5,
                       ),
-                      const SizedBox(width: 16.0),
-                      Text(
-                        'End $endDate',
-                        style: const TextStyle(
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black),
-                      ),
-                    ],
+                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Start $startDate',
+                          style: const TextStyle(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8.0),
+                  Container(
+                    width: 80.0,
+                    height: 33.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xaae0e0e0),
+                        width: 1.5,
+                      ),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(8.0)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'End $endDate',
+                          style: const TextStyle(
+                              fontSize: 13.0,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
               Visibility(
                 visible: total == '0' ? false : true,

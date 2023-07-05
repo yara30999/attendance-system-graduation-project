@@ -144,7 +144,6 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
   Future<void> fetchLectureData() async {
     if (_authType == 'assistant') {
       setState(() {
-        // cardList.clear();
         _lecIsLoaded = true;
       });
       return;
@@ -160,52 +159,61 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
     });
     if (response == null) return;
     final data = filteredLectureModelFromJson(response);
-    final lectureId = data.lectures?.id;
-    final lectureName = 'Lecture ${data.lectures?.subjectId?.name}';
-    final lectureStart = data.lectures == null
-        ? null
-        : DateFormat('H:mm').format(data.lectures!.date);
-    final incrementedTime = data.lectures == null
-        ? null
-        : DateFormat('H:mm').parse(lectureStart!).add(const Duration(hours: 2));
-    final lectureEnd = data.lectures == null
-        ? null
-        : DateFormat('H:mm').format(incrementedTime!);
-    final List<AttendanceList>? attendlist = data.lectures?.attendanceList;
-    final total = attendlist?.length.toString();
-    final String? here;
-    final String? absence;
-    if (attendlist == null || attendlist == []) {
-      here = '0';
-      absence = '0';
-    } else {
-      int count1 = 0, count2 = 0;
-      for (var item in attendlist) {
-        if (item.status == true) {
-          count1++;
+    if (data.lectures != null) {
+      for (int i = 0; i < data.lectures!.length; i++) {
+        final lectureId = data.lectures?[i].id;
+        final lectureName = 'Lecture ${data.lectures?[i].subjectId?.name}';
+        final lectureStart = data.lectures == null
+            ? null
+            : DateFormat('H:mm').format(data.lectures![i].date);
+        final incrementedTime = data.lectures == null
+            ? null
+            : DateFormat('H:mm')
+                .parse(lectureStart!)
+                .add(const Duration(hours: 2));
+        final lectureEnd = data.lectures == null
+            ? null
+            : DateFormat('H:mm').format(incrementedTime!);
+        final List<AttendanceList>? attendlist =
+            data.lectures?[i].attendanceList;
+        final total = attendlist?.length.toString();
+        final String? here;
+        final String? absence;
+        if (attendlist == null || attendlist == []) {
+          here = '0';
+          absence = '0';
         } else {
-          count2++;
+          int count1 = 0, count2 = 0;
+          for (var item in attendlist) {
+            if (item.status == true) {
+              count1++;
+            } else {
+              count2++;
+            }
+          }
+          here = count1.toString();
+          absence = count2.toString();
         }
+        print(attendlist);
+        setState(() {
+          //cardList.clear();
+          if (data.lectures != null) {
+            cardList.add(CardData(
+              lecId: lectureId,
+              lecName: lectureName,
+              lecStart: lectureStart,
+              lecEnd: lectureEnd,
+              userName: 'Dr. $_authName',
+              attendList: attendlist,
+              total: total,
+              here: here,
+              absence: absence,
+            ));
+          }
+        });
       }
-      here = count1.toString();
-      absence = count2.toString();
     }
-    print(attendlist);
     setState(() {
-      //cardList.clear();
-      if (data.lectures != null) {
-        cardList.add(CardData(
-          lecId: lectureId,
-          lecName: lectureName,
-          lecStart: lectureStart,
-          lecEnd: lectureEnd,
-          userName: 'Dr. $_authName',
-          attendList: attendlist,
-          total: total,
-          here: here,
-          absence: absence,
-        ));
-      }
       _lecIsLoaded = true;
     });
   }
@@ -226,57 +234,64 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
         .catchError((err) {
       print('yaraaaaaaaaaa error $err');
     });
-
     if (response == null) return;
     final data = model.filteredProfissorSectionsModelFromJson(response);
-    final sectionId = data.sections?.id;
-    final sectionName = 'Section ${data.sections?.subjectId?.name}';
-    final sectionStart = data.sections == null
-        ? null
-        : DateFormat('H:mm').format(data.sections!.date);
-    final incrementedTime = data.sections == null
-        ? null
-        : DateFormat('H:mm').parse(sectionStart!).add(const Duration(hours: 2));
-    final sectionEnd = data.sections == null
-        ? null
-        : DateFormat('H:mm').format(incrementedTime!);
-    final List<model.AttendanceList>? attendlist =
-        data.sections?.attendanceList;
-    final total = attendlist?.length.toString();
-    final String? here;
-    final String? absence;
-    if (attendlist == null || attendlist == []) {
-      here = '0';
-      absence = '0';
-    } else {
-      int count1 = 0, count2 = 0;
-      for (var item in attendlist) {
-        if (item.status == true) {
-          count1++;
+    if (data.sections != null) {
+      for (int i = 0; i < data.sections!.length; i++) {
+        final sectionId = data.sections?[i].id;
+        final sectionName = 'Section ${data.sections?[i].subjectId?.name}';
+        final sectionStart = data.sections == null
+            ? null
+            : DateFormat('H:mm').format(data.sections![i].date);
+        final incrementedTime = data.sections == null
+            ? null
+            : DateFormat('H:mm')
+                .parse(sectionStart!)
+                .add(const Duration(hours: 2));
+        final sectionEnd = data.sections == null
+            ? null
+            : DateFormat('H:mm').format(incrementedTime!);
+        final List<model.AttendanceList>? attendlist =
+            data.sections?[i].attendanceList;
+        final total = attendlist?.length.toString();
+        final String? here;
+        final String? absence;
+        if (attendlist == null || attendlist == []) {
+          here = '0';
+          absence = '0';
         } else {
-          count2++;
+          int count1 = 0, count2 = 0;
+          for (var item in attendlist) {
+            if (item.status == true) {
+              count1++;
+            } else {
+              count2++;
+            }
+          }
+          here = count1.toString();
+          absence = count2.toString();
         }
+        print(attendlist);
+        setState(() {
+          if (data.sections != null) {
+            cardList.add(CardData(
+              lecId: sectionId,
+              lecName: sectionName,
+              lecStart: sectionStart,
+              lecEnd: sectionEnd,
+              userName: _authType == 'assistant'
+                  ? 'Eng. $_authName'
+                  : 'Dr. $_authName',
+              attendList: attendlist,
+              total: total,
+              here: here,
+              absence: absence,
+            ));
+          }
+        });
       }
-      here = count1.toString();
-      absence = count2.toString();
     }
-    print(attendlist);
     setState(() {
-      // cardList.clear();
-      if (data.sections != null) {
-        cardList.add(CardData(
-          lecId: sectionId,
-          lecName: sectionName,
-          lecStart: sectionStart,
-          lecEnd: sectionEnd,
-          userName:
-              _authType == 'assistant' ? 'Eng. $_authName' : 'Dr. $_authName',
-          attendList: attendlist,
-          total: total,
-          here: here,
-          absence: absence,
-        ));
-      }
       _secIsLoaded = true;
     });
   }
@@ -296,7 +311,6 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
                   Navigator.pushNamed(context, FirstScreen.id);
                 },
               ),
-              const SizedBox(height: 12.0),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(

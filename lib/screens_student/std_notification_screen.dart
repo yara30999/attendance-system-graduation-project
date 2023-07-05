@@ -157,43 +157,8 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
                   notiNumbers: notificationList.length,
                 ),
                 const SizedBox(height: 10.0),
-                const Text(
-                  'Today',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 10.0),
                 SizedBox(
-                  height: 210,
-                  child:
-                      // NotificationStreamBuilder(
-                      //   myStream: _isLoaded
-                      //       ? _firestore
-                      //           .collection(
-                      //               'notifications_${_authType!.toLowerCase().trim()}')
-                      //           .orderBy("orderDate", descending: false)
-                      //           .snapshots()
-                      //       : null,
-                      // )),
-                      ListView.builder(
-                          itemCount: notificationList.length,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            return NotificationsLine(
-                              label: notificationList[index].title.toString(),
-                              date: notificationList[index].date.toString(),
-                              stdName: notificationList[index].name,
-                              stdStatus: notificationList[index].status,
-                            );
-                          }),
-                ),
-                const SizedBox(height: 10.0),
-                const Text(
-                  'This Week',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 10.0),
-                SizedBox(
-                  height: 132,
+                  height: 400,
                   child: ListView.builder(
                       itemCount: notificationList.length,
                       shrinkWrap: true,
@@ -205,7 +170,7 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
                           stdStatus: notificationList[index].status,
                         );
                       }),
-                )
+                ),
               ],
             ),
           )
@@ -225,54 +190,13 @@ class NotificationNumber extends StatelessWidget {
       children: [
         const Text('You have '),
         Text(
-          '$notiNumbers Notifications',
+          '$notiNumbers Notifications .',
           style: const TextStyle(color: Color(0xff66B4E3)),
         ),
-        const Text(' today.')
       ],
     );
   }
 }
-
-// class NotificationStreamBuilder extends StatelessWidget {
-//   const NotificationStreamBuilder({super.key, required this.myStream});
-//   final Stream<QuerySnapshot<Object?>>? myStream;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<QuerySnapshot>(
-//         stream: myStream,
-//         builder: (context, snapshot) {
-//           List<NotificationsLine> notificationsWidget = [];
-//           if (!snapshot.hasData) {
-//             return const Center(
-//               child: Text(
-//                 'You don\'t have notifications...',
-//                 style: TextStyle(
-//                   color: Colors.blueAccent,
-//                   fontWeight: FontWeight.bold,
-//                   fontSize: 20,
-//                 ),
-//               ),
-//             );
-//           }
-//           final notifications = snapshot.data!.docs.reversed; //list of docs
-//           for (var notify in notifications) {
-//             final orderId = notify.get('orderId');
-//             final orderDate = notify.get('orderDate');
-
-//             notificationsWidget.add(NotificationsLine(
-//               label: orderId.toString(),
-//               date: orderDate.toDate().toLocal().toString(),
-//             ));
-//           }
-//           return ListView(
-//             scrollDirection: Axis.vertical,
-//             children: notificationsWidget,
-//           );
-//         });
-//   }
-// }
 
 class NotificationsLine extends StatelessWidget {
   const NotificationsLine({
@@ -327,7 +251,7 @@ class NotificationsLine extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 5),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Student : ${stdName ?? ' '}',
@@ -336,11 +260,33 @@ class NotificationsLine extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        Text(
-                          'Status : ${stdStatus ?? ' '}',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w400,
+                        Container(
+                          // width: 0.0,
+                          height: 33.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: const Color(0xaae0e0e0),
+                              width: 1.5,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8.0)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(width: 2.5),
+                              Text(
+                                stdStatus?.toLowerCase().trim() == 'true'
+                                    ? 'You attended the lecture.'
+                                    : 'You missed the lecture.',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(width: 2.5),
+                            ],
                           ),
                         ),
                       ],

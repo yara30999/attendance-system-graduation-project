@@ -74,55 +74,87 @@ class ClassesViewSTD extends StatelessWidget {
                         color: Colors.black),
                   ),
                   const SizedBox(height: 2.0),
-                  Text(
-                    userName!,
-                    style: const TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          userName!,
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          'Status: $status',
+                          style: const TextStyle(
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ]),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 80.0,
+                        height: 33.0,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xaae0e0e0),
+                            width: 1.5,
+                          ),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8.0)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Start $startDate',
+                              style: const TextStyle(
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Container(
+                        width: 80.0,
+                        height: 33.0,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xaae0e0e0),
+                            width: 1.5,
+                          ),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8.0)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'End $endDate',
+                              style: const TextStyle(
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Text(
+                      //   'Status: $status',
+                      //   style: const TextStyle(
+                      //     fontSize: 15.0,
+                      //     fontWeight: FontWeight.w400,
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-                  child: Container(
-                    width: 180.0,
-                    height: 33.0,
-                    color: const Color(0xffF3F3F3),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Start $startDate',
-                          style: const TextStyle(
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black),
-                        ),
-                        const SizedBox(width: 16.0),
-                        Text(
-                          'End $endDate',
-                          style: const TextStyle(
-                              fontSize: 13.0,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Text(
-                  'Status: $status',
-                  style: const TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
             ),
             const SizedBox(
               height: 10.0,

@@ -250,7 +250,6 @@ class _STDAttendanceClassesScreenState
                   Navigator.pushNamed(context, SecondScreen.id);
                 },
               ),
-              const SizedBox(height: 12.0),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Column(

@@ -245,30 +245,31 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // 1) digital clock
-                        kDigitalClockStyle,
+                      children: const [
+                        // 1) digital clock was here
+                        Text(
+                          'Welcome Back',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15.0,
+                              fontWeight: FontWeight.w500),
+                        ),
                         // 2) profile photo
-                        const UserPhoto(
-                          img: 'images/user1.png',
-                          rounded: false,
+                        SizedBox(
+                          height: 30.0,
+                          width: 30.0,
+                          child: UserPhoto(
+                            img: 'images/user1.png',
+                            rounded: false,
+                          ),
                         ),
                       ],
                     ),
-                    //const SizedBox(height: 10.0),
-                    const Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500),
-                    ),
-                    // const SizedBox(height: 12.0),
                     const Text(
                       'Let\'s find',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30.0,
+                          fontSize: 20.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
@@ -276,11 +277,11 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                       'Your next class!',
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30.0,
+                          fontSize: 20.0,
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600),
                     ),
-                    // const SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                     // 3) search field
                     SearchField(
                       hintText: 'Search Class...',
@@ -365,7 +366,7 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                                 ]),
                           ),
                           SizedBox(
-                            height: 150.0,
+                            height: 250.0,
                             child: Center(
                               child: TabBarView(children: [
                                 ClassesTabSTD(lecture: _filteredData),
