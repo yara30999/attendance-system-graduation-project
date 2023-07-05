@@ -1,10 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/auth_state.dart';
+import '../models/prof_noti_model.dart';
+import '../services/base_client.dart';
 import 'first_screen.dart';
 import '../componant/appbar_custom.dart';
 
-final _firestore = FirebaseFirestore.instance;
+//final _firestore = FirebaseFirestore.instance;
+
+class NotiDataSTD {
+  late final String? title;
+  late final String? date;
+  late final String? data_1;
+  late final String? data_2;
+
+  NotiDataSTD({
+    required this.title,
+    required this.date,
+    required this.data_1,
+    required this.data_2,
+  });
+}
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -16,49 +33,137 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<Map<String, String>> notificationList = [
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
+  List<NotiDataSTD> notificationList = [
+    // {'label': 'your attendance have been checked', 'date': '08 May 2022'},
+    // {'label': 'you have ecommerce section', 'date': '08 May 2022'},
+    // {'label': 'you have 3 classes', 'date': '08 May 2022'},
+    // {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
+    // {'label': 'your attendance have been checked', 'date': '08 May 2022'},
+    // {'label': 'you have ecommerce section', 'date': '08 May 2022'},
+    // {'label': 'you have 3 classes', 'date': '08 May 2022'},
+    // {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
+    // {'label': 'your attendance have been checked', 'date': '08 May 2022'},
+    // {'label': 'you have ecommerce section', 'date': '08 May 2022'},
+    // {'label': 'you have 3 classes', 'date': '08 May 2022'},
+    // {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
   ];
 
+  String? _authToken;
   String? _authType;
   String? _authId;
   late bool _isLoaded;
+
+  showError(String data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error...'),
+        content: Text(data),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    loadUserType();
+    loadToken();
   }
 
-  Future<void> loadUserType() async {
+  Future<void> loadToken() async {
+    // load the authToken from shared preferences
+    // final tokenState = TokenSaved();
     setState(() {
       _isLoaded = false;
     });
+    //////////////////////////////////////////////////get token first.
+    await tokenState.getAuthToken().then((value) {
+      setState(() {
+        _authToken = value;
+      });
+    });
+    print('my token $_authToken');
+    //////////////////////////////////////////////////then get type.
     await tokenState.getAuthType().then((value) {
       setState(() {
-        _authType = value!.toLowerCase();
+        _authType = value;
       });
     });
-    print('my user type $_authType');
+    print('my type $_authType');
+    //////////////////////////////////////////////////then get id.
     await tokenState.getAuthId().then((value) {
       setState(() {
-        _authId = value!.toString();
+        _authId = value;
       });
     });
-    print('my user Id $_authId');
+    print('my type $_authId');
+    checkLoadedData();
+  }
+
+  void checkLoadedData() async {
+    await fetchNotificationData();
     setState(() {
       _isLoaded = true;
     });
+  }
+
+  Future<void> fetchNotificationData() async {
+    setState(() {
+      notificationList.clear();
+    });
+
+    if (_authType == 'professor') {
+      var response = await BaseClient()
+          .get(
+              '/professor-notification',
+              _authToken!,
+              errTxt: 'can\'t load professor notifications ...',
+              showError)
+          .catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+
+      final data = professorNotificationModelFromJson(response);
+      if (data.notification != null) {
+        for (int i = 0; i < data.notification!.length; i++) {
+          final notiTitle = data.notification?[i].title;
+          final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
+              .format(data.notification![i].date);
+          if (notiTitle?.toLowerCase() == 'lecture date passed') {
+            final data_1 = data.notification?[i].data?.lectureName;
+            final dateString = data.notification?[i].data?.lectureDate;
+            List<String> words = dateString!.split(' ');
+            List<String> firstFourWords = words.sublist(0, 4);
+            String data_2 = firstFourWords.join(' ');
+            setState(() {
+              notificationList.add(NotiDataSTD(
+                title: notiTitle,
+                date: notiDate,
+                data_1: data_1,
+                data_2: data_2,
+              ));
+            });
+          } else {
+            final data_1 = data.notification?[i].data?.profName;
+            final data_2 = data.notification?[i].data?.userType;
+            setState(() {
+              notificationList.add(NotiDataSTD(
+                title: notiTitle,
+                date: notiDate,
+                data_1: data_1,
+                data_2: data_2,
+              ));
+            });
+          }
+        }
+      }
+    } else if (_authType == 'assistant') {}
   }
 
   @override
@@ -82,13 +187,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NotificationNumber(
-                  myStream: _isLoaded
-                      ? _firestore
-                          .collection(
-                              'notifications_${_authType!.toLowerCase().trim()}')
-                          .orderBy("orderDate", descending: false)
-                          .snapshots()
-                      : null,
+                  notiNumbers: notificationList.length,
                 ),
                 const SizedBox(height: 10.0),
                 const Text(
@@ -97,16 +196,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 ),
                 const SizedBox(height: 10.0),
                 SizedBox(
-                    height: 210,
-                    child: NotificationStreamBuilder(
-                      myStream: _isLoaded
-                          ? _firestore
-                              .collection(
-                                  'notifications_${_authType!.toLowerCase().trim()}')
-                              .orderBy("orderDate", descending: false)
-                              .snapshots()
-                          : null,
-                    )),
+                  height: 210,
+                  child: ListView.builder(
+                      itemCount: notificationList.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return NotificationsLine(
+                          label: notificationList[index].title.toString(),
+                          date: notificationList[index].date.toString(),
+                          firstData: notificationList[index].data_1,
+                          secondData: notificationList[index].data_2,
+                        );
+                      }),
+                ),
                 const SizedBox(height: 10.0),
                 const Text(
                   'This Week',
@@ -120,8 +222,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return NotificationsLine(
-                          label: notificationList[index]['label'].toString(),
-                          date: notificationList[index]['date'].toString(),
+                          label: notificationList[index].title.toString(),
+                          date: notificationList[index].date.toString(),
+                          firstData: notificationList[index].data_1,
+                          secondData: notificationList[index].data_2,
                         );
                       }),
                 )
@@ -135,94 +239,77 @@ class _NotificationScreenState extends State<NotificationScreen> {
 }
 
 class NotificationNumber extends StatelessWidget {
-  const NotificationNumber({super.key, required this.myStream});
-  final Stream<QuerySnapshot<Object?>>? myStream;
+  const NotificationNumber({super.key, required this.notiNumbers});
+
+  final int notiNumbers;
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: myStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Row(
-            children: const [
-              Text('You have '),
-              Text(
-                '0 Notifications',
-                style: TextStyle(color: Color(0xff66B4E3)),
-              ),
-              Text(' today.')
-            ],
-          );
-        }else{
-          // Get the number of documents in the collection
-          int count = snapshot.data!.size;
-          // Build your UI using the count
-          return Row(
-            children: [
-              const Text('You have '),
-              Text(
-                '$count Notifications',
-                style: const TextStyle(color: Color(0xff66B4E3)),
-              ),
-              const Text(' today.')
-            ],
-          );
-        }
-        
-      },
+    return Row(
+      children: [
+        const Text('You have '),
+        Text(
+          '$notiNumbers Notifications',
+          style: const TextStyle(color: Color(0xff66B4E3)),
+        ),
+        const Text(' today.')
+      ],
     );
   }
 }
 
-class NotificationStreamBuilder extends StatelessWidget {
-  const NotificationStreamBuilder({super.key, required this.myStream});
-  final Stream<QuerySnapshot<Object?>>? myStream;
+// class NotificationStreamBuilder extends StatelessWidget {
+//   const NotificationStreamBuilder({super.key, required this.myStream});
+//   final Stream<QuerySnapshot<Object?>>? myStream;
 
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: myStream,
-        builder: (context, snapshot) {
-          List<NotificationsLine> notificationsWidget = [];
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text(
-                'You don\'t have notifications...',
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            );
-          }
-          final notifications = snapshot.data!.docs.reversed; //list of docs
-          for (var notify in notifications) {
-            final orderId = notify.get('orderId');
-            final orderDate = notify.get('orderDate');
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<QuerySnapshot>(
+//         stream: myStream,
+//         builder: (context, snapshot) {
+//           List<NotificationsLine> notificationsWidget = [];
+//           if (!snapshot.hasData) {
+//             return const Center(
+//               child: Text(
+//                 'You don\'t have notifications...',
+//                 style: TextStyle(
+//                   color: Colors.blueAccent,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 20,
+//                 ),
+//               ),
+//             );
+//           }
+//           final notifications = snapshot.data!.docs.reversed; //list of docs
+//           for (var notify in notifications) {
+//             final orderId = notify.get('orderId');
+//             final orderDate = notify.get('orderDate');
 
-            notificationsWidget.add(NotificationsLine(
-              label: orderId.toString(),
-              date: orderDate.toDate().toLocal().toString(),
-            ));
-          }
-          return ListView(
-            scrollDirection: Axis.vertical,
-            children: notificationsWidget,
-          );
-        });
-  }
-}
+//             notificationsWidget.add(NotificationsLine(
+//               label: orderId.toString(),
+//               date: orderDate.toDate().toLocal().toString(),
+//             ));
+//           }
+//           return ListView(
+//             scrollDirection: Axis.vertical,
+//             children: notificationsWidget,
+//           );
+//         });
+//   }
+// }
 
 class NotificationsLine extends StatelessWidget {
   const NotificationsLine({
     super.key,
     required this.label,
     required this.date,
+    this.firstData,
+    this.secondData,
   });
 
   final String label;
   final String date;
+  final String? firstData;
+  final String? secondData;
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +344,31 @@ class NotificationsLine extends StatelessWidget {
                   fontSize: 14.0,
                   fontWeight: FontWeight.w400,
                 ),
-              )
+              ),
+              Visibility(
+                  visible: firstData != null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          firstData ?? ' ',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          secondData ?? ' ',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
             ],
           ),
         ),

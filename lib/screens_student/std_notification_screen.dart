@@ -1,10 +1,28 @@
 import 'package:fast_tende_doctor_app/screens_student/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../componant/appbar_custom.dart';
 import '../models/auth_state.dart';
+import '../models/std_noti_model.dart';
+import '../services/base_client.dart';
 
-final _firestore = FirebaseFirestore.instance;
+//final _firestore = FirebaseFirestore.instance;
+
+class NotiDataSTD {
+  late final String? title;
+  late final String? date;
+  late final String? name;
+  late final String? status;
+
+  NotiDataSTD({
+    required this.title,
+    required this.date,
+    required this.name,
+    required this.status,
+  });
+}
+
 class STDNotificationScreen extends StatefulWidget {
   const STDNotificationScreen({super.key});
   static String id = 'std_notification_screen';
@@ -14,51 +32,106 @@ class STDNotificationScreen extends StatefulWidget {
 }
 
 class _STDNotificationScreenState extends State<STDNotificationScreen> {
-  List<Map<String, String>> notificationList = [
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
-    {'label': 'your attendance have been checked', 'date': '08 May 2022'},
-    {'label': 'you have ecommerce section', 'date': '08 May 2022'},
-    {'label': 'you have 3 classes', 'date': '08 May 2022'},
-    {'label': 'your attendance have not been checked', 'date': '08 May 2022'},
-  ];
+  List<NotiDataSTD> notificationList = [];
 
+  String? _authToken;
   String? _authType;
   String? _authId;
   late bool _isLoaded;
+
+  showError(String data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error...'),
+        content: Text(data),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    loadUserType();
+    loadToken();
   }
 
-  Future<void> loadUserType() async {
+  Future<void> loadToken() async {
+    // load the authToken from shared preferences
+    // final tokenState = TokenSaved();
     setState(() {
       _isLoaded = false;
     });
+    //////////////////////////////////////////////////get token first.
+    await tokenState.getAuthToken().then((value) {
+      setState(() {
+        _authToken = value;
+      });
+    });
+    print('my token $_authToken');
+    //////////////////////////////////////////////////then get type.
     await tokenState.getAuthType().then((value) {
       setState(() {
-        _authType = value!.toLowerCase();
+        _authType = value;
       });
     });
-    print('my user type $_authType');
+    print('my type $_authType');
+    //////////////////////////////////////////////////then get id.
     await tokenState.getAuthId().then((value) {
       setState(() {
-        _authId = value!.toString();
+        _authId = value;
       });
     });
-    print('my user Id $_authId');
+    print('my type $_authId');
+    checkLoadedData();
+  }
+
+  void checkLoadedData() async {
+    await fetchNotificationData();
     setState(() {
       _isLoaded = true;
     });
   }
 
+  Future<void> fetchNotificationData() async {
+    setState(() {
+      notificationList.clear();
+    });
+    var response = await BaseClient()
+        .get(
+            '/student-notification',
+            _authToken!,
+            errTxt: 'can\'t load notifications ...',
+            showError)
+        .catchError((err) {
+      print('yaraaaaaaaaaa error $err');
+    });
+    if (response == null) return;
+
+    final data = studentNotificationModelFromJson(response);
+    if (data.notification != null) {
+      for (int i = 0; i < data.notification!.length; i++) {
+        final notiTitle = data.notification?[i].title;
+        final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
+            .format(data.notification![i].date);
+        final studentName = data.notification?[i].data?.studentName;
+        final studentStatus = data.notification?[i].data?.studentStatus;
+        setState(() {
+          notificationList.add(NotiDataSTD(
+            title: notiTitle,
+            date: notiDate,
+            name: studentName,
+            status: studentStatus,
+          ));
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,13 +154,7 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NotificationNumber(
-                  myStream: _isLoaded
-                      ? _firestore
-                          .collection(
-                              'notifications_${_authType!.toLowerCase().trim()}')
-                          .orderBy("orderDate", descending: false)
-                          .snapshots()
-                      : null,
+                  notiNumbers: notificationList.length,
                 ),
                 const SizedBox(height: 10.0),
                 const Text(
@@ -96,16 +163,29 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
                 ),
                 const SizedBox(height: 10.0),
                 SizedBox(
-                    height: 210,
-                    child: NotificationStreamBuilder(
-                      myStream: _isLoaded
-                          ? _firestore
-                              .collection(
-                                  'notifications_${_authType!.toLowerCase().trim()}')
-                              .orderBy("orderDate", descending: false)
-                              .snapshots()
-                          : null,
-                    )),
+                  height: 210,
+                  child:
+                      // NotificationStreamBuilder(
+                      //   myStream: _isLoaded
+                      //       ? _firestore
+                      //           .collection(
+                      //               'notifications_${_authType!.toLowerCase().trim()}')
+                      //           .orderBy("orderDate", descending: false)
+                      //           .snapshots()
+                      //       : null,
+                      // )),
+                      ListView.builder(
+                          itemCount: notificationList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return NotificationsLine(
+                              label: notificationList[index].title.toString(),
+                              date: notificationList[index].date.toString(),
+                              stdName: notificationList[index].name,
+                              stdStatus: notificationList[index].status,
+                            );
+                          }),
+                ),
                 const SizedBox(height: 10.0),
                 const Text(
                   'This Week',
@@ -119,8 +199,10 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return NotificationsLine(
-                          label: notificationList[index]['label'].toString(),
-                          date: notificationList[index]['date'].toString(),
+                          label: notificationList[index].title.toString(),
+                          date: notificationList[index].date.toString(),
+                          stdName: notificationList[index].name,
+                          stdStatus: notificationList[index].status,
                         );
                       }),
                 )
@@ -133,95 +215,78 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
   }
 }
 
-
 class NotificationNumber extends StatelessWidget {
-  const NotificationNumber({super.key, required this.myStream});
-  final Stream<QuerySnapshot<Object?>>? myStream;
+  const NotificationNumber({super.key, required this.notiNumbers});
+
+  final int notiNumbers;
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: myStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Row(
-            children: const [
-              Text('You have '),
-              Text(
-                '0 Notifications',
-                style: TextStyle(color: Color(0xff66B4E3)),
-              ),
-              Text(' today.')
-            ],
-          );
-        } else {
-          // Get the number of documents in the collection
-          int count = snapshot.data!.size;
-          // Build your UI using the count
-          return Row(
-            children: [
-              const Text('You have '),
-              Text(
-                '$count Notifications',
-                style: const TextStyle(color: Color(0xff66B4E3)),
-              ),
-              const Text(' today.')
-            ],
-          );
-        }
-      },
+    return Row(
+      children: [
+        const Text('You have '),
+        Text(
+          '$notiNumbers Notifications',
+          style: const TextStyle(color: Color(0xff66B4E3)),
+        ),
+        const Text(' today.')
+      ],
     );
   }
 }
 
-class NotificationStreamBuilder extends StatelessWidget {
-  const NotificationStreamBuilder({super.key, required this.myStream});
-  final Stream<QuerySnapshot<Object?>>? myStream;
+// class NotificationStreamBuilder extends StatelessWidget {
+//   const NotificationStreamBuilder({super.key, required this.myStream});
+//   final Stream<QuerySnapshot<Object?>>? myStream;
 
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: myStream,
-        builder: (context, snapshot) {
-          List<NotificationsLine> notificationsWidget = [];
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text(
-                'You don\'t have notifications...',
-                style: TextStyle(
-                  color: Colors.blueAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            );
-          }
-          final notifications = snapshot.data!.docs.reversed; //list of docs
-          for (var notify in notifications) {
-            final orderId = notify.get('orderId');
-            final orderDate = notify.get('orderDate');
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder<QuerySnapshot>(
+//         stream: myStream,
+//         builder: (context, snapshot) {
+//           List<NotificationsLine> notificationsWidget = [];
+//           if (!snapshot.hasData) {
+//             return const Center(
+//               child: Text(
+//                 'You don\'t have notifications...',
+//                 style: TextStyle(
+//                   color: Colors.blueAccent,
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 20,
+//                 ),
+//               ),
+//             );
+//           }
+//           final notifications = snapshot.data!.docs.reversed; //list of docs
+//           for (var notify in notifications) {
+//             final orderId = notify.get('orderId');
+//             final orderDate = notify.get('orderDate');
 
-            notificationsWidget.add(NotificationsLine(
-              label: orderId.toString(),
-              date: orderDate.toDate().toLocal().toString(),
-            ));
-          }
-          return ListView(
-            scrollDirection: Axis.vertical,
-            children: notificationsWidget,
-          );
-        });
-  }
-}
+//             notificationsWidget.add(NotificationsLine(
+//               label: orderId.toString(),
+//               date: orderDate.toDate().toLocal().toString(),
+//             ));
+//           }
+//           return ListView(
+//             scrollDirection: Axis.vertical,
+//             children: notificationsWidget,
+//           );
+//         });
+//   }
+// }
 
 class NotificationsLine extends StatelessWidget {
   const NotificationsLine({
     super.key,
     required this.label,
     required this.date,
+    this.stdName,
+    this.stdStatus,
   });
 
   final String label;
   final String date;
+  final String? stdName;
+  final String? stdStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +321,31 @@ class NotificationsLine extends StatelessWidget {
                   fontSize: 14.0,
                   fontWeight: FontWeight.w400,
                 ),
-              )
+              ),
+              Visibility(
+                  visible: stdName != null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          'Student : ${stdName ?? ' '}',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        Text(
+                          'Status : ${stdStatus ?? ' '}',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
             ],
           ),
         ),

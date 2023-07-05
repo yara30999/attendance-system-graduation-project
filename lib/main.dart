@@ -38,7 +38,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final orderDate = message.data['orderDate'];
   print('my title is ...$title');
   print('my body is ..$body');
-  await saveToDatabase(orderId, orderDate);
+  //await saveToDatabase(orderId, orderDate);
   await NotificationService.showNotification(
     title: title,
     body: body,
@@ -194,7 +194,7 @@ class _LoginCheckState extends State<LoginCheck> {
         print('my body is ..$body');
         print('my orderId is ...$orderId');
         print('my orderDate is ..$orderDate');
-        await saveToDatabase(orderId, orderDate);
+        //await saveToDatabase(orderId, orderDate);
         await NotificationService.showNotification(
           title: title,
           body: body,
@@ -219,7 +219,7 @@ class _LoginCheckState extends State<LoginCheck> {
         print('my orderId is ...$orderId');
         print('my orderDate is ..$orderDate');
 
-        await saveToDatabase(orderId, orderDate);
+        //await saveToDatabase(orderId, orderDate);
 
         showDialog(
             context: navigatorKey.currentState!.context,
@@ -252,13 +252,13 @@ class _LoginCheckState extends State<LoginCheck> {
         if (message.notification != null) {
           final title = message.notification!.title.toString();
           final body = message.notification!.body.toString();
-          final orderId = message.data['orderId'];
-          final orderDate = message.data['orderDate'];
+          // final orderId = message.data['orderId'];
+          // final orderDate = message.data['orderDate'];
           print('my title is ...$title');
           print('my body is ..$body');
-          print('my orderId is ...$orderId');
-          print('my orderDate is ..$orderDate');
-          await saveToDatabase(orderId, orderDate);
+          // print('my orderId is ...$orderId');
+          // print('my orderDate is ..$orderDate');
+          //await saveToDatabase(orderId, orderDate);
           // Navigator.pushNamed(
           //   navigatorKey.currentState!.context,
           //   NotificationScreen.id,

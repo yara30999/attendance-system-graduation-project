@@ -1,7 +1,7 @@
 import 'package:fast_tende_doctor_app/screens/first_screen.dart';
 import 'package:fast_tende_doctor_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import '../models/assestant_model.dart';
+import '../models/assistant_model.dart';
 import '../models/auth_state.dart';
 import '../models/proffessor_model.dart';
 import '../services/base_client.dart';
