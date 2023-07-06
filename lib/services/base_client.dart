@@ -32,6 +32,28 @@ class BaseClient {
     }
   }
 
+  Future<dynamic> patch(String api, String token, dynamic object,
+      void Function(String) showErrorDialog,
+      {String errTxt = 'can\'t load data'}) async {
+    var url = Uri.parse(baseUrl + api);
+    var payload = json.encode(object);
+    var headers = {
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+      HttpHeaders.contentTypeHeader: 'application/json',
+    };
+
+    var response = await http.patch(url, body: payload, headers: headers);
+    debugPrint(
+        'your patch request with status code ${response.statusCode} yaraaaaaaaaa');
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      showErrorDialog(errTxt);
+      //throw exception and catch it in UI
+      throw Exception('Failed to make patch request ==> yara:-)');
+    }
+  }
+
   Future<dynamic> post(String api, dynamic object) async {
     var url = Uri.parse(baseUrl + api);
     var payload = json.encode(object);

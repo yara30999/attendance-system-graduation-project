@@ -1,6 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:open_file/open_file.dart';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import '../componant/appbar_custom.dart';
 import '../constants.dart';
+import '../models/attend_lec_model.dart';
+import '../models/auth_state.dart';
+import '../services/base_client.dart';
 import 'first_screen.dart';
 import '../componant/class_view.dart';
 import '../componant/search_field.dart';
@@ -17,25 +29,45 @@ class AttendanceListScreen extends StatefulWidget {
 }
 
 class _AttendanceListScreenState extends State<AttendanceListScreen> {
+  late String lectureId;
   late String lectureName;
-  late String total;
-  late String here;
-  late String absent;
+  String? total;
+  String? here;
+  String? absent;
+
+  String? _authToken;
+  String? _authType;
+  String? _authId;
+  late bool _isLoaded;
 
   bool _notSaved = true;
+  List<StudentListElement>? serverList;
 
-  List<StudentItem> tasks = [
-    StudentItem(name: 'yara nasser elden'),
-    StudentItem(name: 'ahmed mohammed ali'),
-    StudentItem(name: 'noor yasser ali'),
-    StudentItem(name: 'noor yasser ali'),
-    StudentItem(name: 'yara nasser elden'),
-    StudentItem(name: 'ahmed mohammed ali'),
-    StudentItem(name: 'yara nasser elden'),
-  ];
+  void updateServerList(List<StudentListElement> newList) {
+    setState(() {
+      serverList = newList;
+    });
+    print(
+        'yes yes yes yes yes yes yes   second is serverList = newList yyyyyara ');
+  }
+
+  // void userChange(String targetId) {
+  //   for (int i = 0; i < serverList!.length; i++) {
+  //     if (serverList![i].studentId.id == targetId) {
+  //       setState(() {
+  //         serverList![i].status = !serverList![i].status;
+  //       });
+  //       print('yara      .....................        done:)');
+  //       break; // Exit the loop after updating the student's status
+  //     }
+  //   }
+  // }
+
+  List<StudentItem> tasks = [];
 
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  List<StudentItem> _filteredData = [];
 
   // final List<String> _data = [
   //   'Apple',
@@ -62,7 +94,6 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
   //   'Zucchini',
   // ];
   // List<String> _filteredData = [];
-  List<StudentItem> _filteredData = [];
 
   // void _updateFilteredData(String searchTerm) {
   //   setState(() {
@@ -72,6 +103,22 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
   //         .toList();
   //   });
   // }
+
+  showError(String data) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error...'),
+        content: Text(data),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _updateFilteredData(String searchTerm) {
     setState(() {
@@ -87,6 +134,207 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
     super.initState();
     // _filteredData = _data;
     _filteredData = tasks;
+    loadToken();
+  }
+
+  Future<void> loadToken() async {
+    // load the authToken from shared preferences
+    // final tokenState = TokenSaved();
+    setState(() {
+      _isLoaded = false;
+    });
+    //////////////////////////////////////////////////get token first.
+    await tokenState.getAuthToken().then((value) {
+      setState(() {
+        _authToken = value;
+      });
+    });
+    print('my token $_authToken');
+    //////////////////////////////////////////////////then get type.
+    await tokenState.getAuthType().then((value) {
+      setState(() {
+        _authType = value;
+      });
+    });
+    print('my type $_authType');
+    //////////////////////////////////////////////////then get id.
+    await tokenState.getAuthId().then((value) {
+      setState(() {
+        _authId = value;
+      });
+    });
+    print('my type $_authId');
+    await passedData();
+    checkLoadedData();
+  }
+
+  void checkLoadedData() async {
+    await fetchStudentData('');
+    setState(() {
+      _isLoaded = true;
+    });
+  }
+
+  Future<void> fetchStudentData(String filter) async {
+    setState(() {
+      tasks.clear();
+    });
+
+    if (_authType == 'professor') {
+      print('yara ......................:  $lectureId');
+      var response = await BaseClient()
+          .get(
+              '/lecture/$lectureId$filter',
+              _authToken!,
+              errTxt: 'can\'t load Student list ...',
+              showError)
+          .catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+
+      final data = attendanceLectureModelFromJson(response);
+      if (filter == '') {
+        setState(() {
+          serverList = data.studentList;
+        });
+        //print(serverList);
+        // print('...........................................');
+        // print(json.encode(serverList));
+      }
+      setState(() {
+        total = data.total.toString();
+        here = data.here.toString();
+        absent = data.absent.toString();
+      });
+      if (data.studentList != null) {
+        for (int i = 0; i < data.studentList!.length; i++) {
+          final stdId = data.studentList?[i].studentId.id;
+          final stdName = data.studentList?[i].studentId.name;
+          final stdImg = data.studentList?[i].snapshot;
+          final stdStatus = data.studentList?[i].status;
+          setState(() {
+            tasks.add(StudentItem(
+              name: stdName.toString(),
+              status: stdStatus,
+              id: stdId,
+              img: stdImg,
+            ));
+          });
+        }
+      }
+    } else if (_authType == 'assistant') {}
+  }
+
+  Future<void> patchAttendance() async {
+    if (_authType == 'professor') {
+      print('yara ......................:  $lectureId');
+      // final str = List<dynamic>.from(serverList!.map((x) => x.toJson()));
+      // print(str);
+      // final str2 = json.encode(serverList);
+      // print('...........................................');
+      // print(str2);
+      // print('...........................................');
+      final myObject = {"attendanceList": serverList};
+      // print(myObject);
+      // print('...........................................');
+      // print(json.encode(myObject));
+      // print('...........................................');
+      var response = await BaseClient()
+          .patch(
+              '/attendance/$lectureId',
+              _authToken!,
+              myObject,
+              errTxt: 'can\'t send attendance list to the server ...',
+              showError)
+          .catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+      final data = json.decode(response);
+      print('yaaaaaaaaaaaaaaaaaaaaaaaaaaaaa patch response is : $data');
+    } else if (_authType == 'assistant') {}
+  }
+
+  Future<void> saveAsPDF(List<StudentListElement>? students) async {
+    // // Get the temporary directory for storing the PDF file
+    // Directory tempDir = await getTemporaryDirectory();
+    // String tempPath = tempDir.path;
+    // // Generate a unique filename for the PDF
+    // String pdfFileName =
+    //     'saved_pdf_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    // String pdfFilePath = '$tempPath/$pdfFileName';
+    /////////////////////////////////////////////////////////////////////////
+    // Get the downloads directory
+    // Directory downloadsDir;
+    // if (!kIsWeb) {
+    //   // Running on a physical device or emulator
+    //   downloadsDir = (await getDownloadsDirectory())!;
+    // } else {
+    //   // Running in a web browser
+    //   print('Saving PDF not supported on web platform.');
+    //   return;
+    // }
+    // if (downloadsDir == null) {
+    //   print('Unable to access the Downloads directory.');
+    //   return;
+    // }
+    // // Generate a unique filename for the PDF
+    // String pdfFileName =
+    //     'saved_pdf_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    // String pdfFilePath = '${downloadsDir.path}/$pdfFileName';
+    /////////////////////////////////////////////////////////////////////////
+    // Get the documents directory
+    Directory documentsDir = await getApplicationDocumentsDirectory();
+    String documentsPath = documentsDir.path;
+
+    // Generate a unique filename for the PDF
+    String pdfFileName =
+        'saved_pdf_${DateTime.now().millisecondsSinceEpoch}.pdf';
+    String pdfFilePath = '$documentsPath/$pdfFileName';
+    //////////////////////////////////////////////////////////
+    // Create a PDF document
+    final pdf = pw.Document();
+
+    // Create a table header row
+    final tableHeaders = ['ID', 'Name', 'Status'];
+    final tableHeaderRow =
+        tableHeaders.map((header) => pw.Text(header)).toList();
+    final headerRow = pw.TableRow(children: tableHeaderRow);
+
+    // Create table data rows for each student
+    final tableRows = students!.map(
+      (student) => pw.TableRow(
+        children: [
+          pw.Text(student.studentId.id),
+          pw.Text(student.studentId.name),
+          pw.Text(student.status.toString()),
+        ],
+      ),
+    );
+
+    // Add the table to the PDF
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Table(
+            children: [
+              headerRow, // Add the header row
+              ...tableRows, // Add the data rows
+            ],
+          );
+        },
+      ),
+    );
+
+    // Save the PDF to a file
+    final File file = File(pdfFilePath);
+    await file.writeAsBytes(await pdf.save());
+
+    print('yyyyyyyyyyyyyyyyyy PDF saved at: $pdfFilePath');
+
+    // Open the saved PDF file
+    OpenFile.open(pdfFilePath);
   }
 
   @override
@@ -98,13 +346,15 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    passedData();
+  }
+
+  Future<void> passedData() async {
     // Access the passed data using ModalRoute
     final Map<String, dynamic> args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    lectureId = args['lectureId'];
     lectureName = args['lectureName'];
-    total = args['total'];
-    here = args['here'];
-    absent = args['absent'];
   }
 
   @override
@@ -148,18 +398,27 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                         children: [
                           WhiteBox(
                             label: 'Total',
-                            data: total,
+                            data: _isLoaded ? total.toString() : '/',
                             colour: const Color(0xff0D8AD5),
+                            func: () async {
+                              await fetchStudentData('');
+                            },
                           ),
                           WhiteBox(
                             label: 'Here',
-                            data: here,
+                            data: _isLoaded ? here.toString() : '/',
                             colour: const Color(0xff9DEAC0),
+                            func: () async {
+                              await fetchStudentData('?filter=here');
+                            },
                           ),
                           WhiteBox(
                             label: 'Absent',
-                            data: absent,
+                            data: _isLoaded ? absent.toString() : '/',
                             colour: const Color(0xffFF9A9A),
+                            func: () async {
+                              await fetchStudentData('?filter=absent');
+                            },
                           ),
                         ],
                       ),
@@ -192,27 +451,6 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                         // Perform clear search logic here
                         // e.g., reset search results, etc.
                       },
-                      //   box:
-                      //       // SizedBox(
-                      //       //   //to display the list of filterd data
-                      //       //   height: 70,
-                      //       //   child: ListView.builder(
-                      //       //     itemCount: _filteredData.length,
-                      //       //     itemBuilder: (context, index) => Container(
-                      //       //       color: Colors.grey,
-                      //       //       child:
-                      //             // Text(
-                      //             //   _filteredData[index],
-                      //             // ),
-                      //       //     ),
-                      //       //   ),
-                      //       // ),
-                      // Container(
-                      //   height: 200.0,
-                      //   child: StudentList(
-                      //                         students: _filteredData,
-                      //                       ),
-                      // ),
                     ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -233,6 +471,8 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                           //color: Colors.grey,
                           child: StudentList(
                             students: _filteredData,
+                            myList: serverList,
+                            onUpdateMyList: updateServerList,
                           ),
                         ),
                         Center(
@@ -243,12 +483,14 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                                 height: 35.0,
                                 width: 100,
                                 radius: 10.0,
-                                onPress: () {
+                                onPress: () async {
                                   setState(() {
                                     _notSaved = false;
                                   });
                                   //save all the changes to the database
+                                  await patchAttendance();
                                   //and fetch the updated data from the database like (total,absent,here,student list)
+                                  await fetchStudentData('');
                                 },
                               )),
                         ),
@@ -261,16 +503,22 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
                                 height: 35.0,
                                 width: 200.0,
                                 radius: 20.0,
-                                onPress: () {
+                                onPress: () async {
                                   setState(() {
                                     _notSaved = true;
                                   });
                                   //do the downloading process
-                                  print('Student list: ...');
-                                  for (var element in _filteredData) {
-                                    print(element.name);
-                                    print(element.isHere);
-                                  }
+                                  await saveAsPDF(serverList);
+
+                                  // print('Student list: ...');
+                                  // for (var element in _filteredData) {
+                                  // print(element.name);
+                                  // print(element.status);
+                                  // }
+                                  // for (var i = 0; i < serverList!.length; i++) {
+                                  //   print(serverList![i].studentId.name);
+                                  //   print(serverList![i].status);
+                                  // }
                                 },
                               )),
                         ),
@@ -343,23 +591,47 @@ class CustomButton extends StatelessWidget {
 
 class StudentItem {
   late final String name;
-  bool? isHere;
+  bool? status;
+  String? id;
+  String? img;
 
-  StudentItem({required this.name, this.isHere = false});
+  StudentItem({required this.name, this.status, this.id, this.img});
 
-  void toggleDone() {
-    isHere = !isHere!;
+  void toggleDone(List<StudentListElement>? serverList) {
+    status = !status!;
+    for (int i = 0; i < serverList!.length; i++) {
+      if (serverList[i].studentId.id == id) {
+        // Set the new status for the student
+        serverList[i].status = !serverList[i].status;
+        print('yyyyyyyyyyyyyyyyyyyyyyyyyy  first toggle is done ');
+        break; // Exit the loop after updating the student's status
+      }
+    }
   }
+
+  // Future<void> userChange(List<StudentListElement>? serverList) async {
+  //   for (int i = 0; i < serverList!.length; i++) {
+  //     if (serverList[i].studentId.id == id) {
+  //       serverList[i].status =
+  //           !serverList[i].status; // Set the new status for the student
+  //       print('yyyyyyyyyyyyyyyyyyyyyyyyyy  99999999');
+  //       break; // Exit the loop after updating the student's status
+  //     }
+  //   }
+  // }
 }
 
 class StudentTile extends StatelessWidget {
   const StudentTile(
       {super.key,
       this.isChecked,
+      this.imgurl =
+          'https://icon-library.com/images/username-icon/username-icon-28.jpg',
       required this.studentTitle,
       this.switchCallback});
 
   final bool? isChecked;
+  final String? imgurl;
   final String studentTitle;
   final Function(bool?)? switchCallback;
   @override
@@ -370,6 +642,15 @@ class StudentTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(50.0)),
+            child: Image(
+              image: NetworkImage(imgurl.toString()),
+              fit: BoxFit.cover,
+              height: 25.0,
+              width: 25.0,
+            ),
+          ),
           Text(
             studentTitle,
             style: const TextStyle(
@@ -400,28 +681,54 @@ class StudentTile extends StatelessWidget {
 }
 
 class StudentList extends StatefulWidget {
-  const StudentList({super.key, this.students});
+  const StudentList({
+    super.key,
+    this.students,
+    required this.myList,
+    required this.onUpdateMyList,
+  });
   final List<StudentItem>? students;
-
+  final List<StudentListElement>? myList;
+  final Function(List<StudentListElement>) onUpdateMyList;
   @override
   State<StudentList> createState() => _StudentListState();
 }
 
 class _StudentListState extends State<StudentList> {
+  // List<StudentListElement>? serverList;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Assign the value of myList to serverList in the initState method
+  //   serverList = widget.myList;
+  // }
+
+  void updateMyList(List<StudentListElement> newList) {
+    // Invoke the callback function to update serverList
+    widget.onUpdateMyList(newList);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: widget.students!.length,
       itemBuilder: (BuildContext context, int index) {
         return StudentTile(
+            //imgurl: widget.students![index].img.toString(),
             studentTitle: widget.students![index].name,
-            isChecked: widget.students![index].isHere,
+            isChecked: widget.students![index].status,
             switchCallback: (bool? value) {
               setState(() {
-                widget.students![index].toggleDone();
+                widget.students![index].toggleDone(widget.myList);
+                // widget.students![index].userChange(widget.myList);
+                updateMyList(widget.myList!);
               });
+              // Update myList and invoke the callback
+              // updateMyList(widget.myList!);
               print(widget.students![index].name);
-              print(widget.students![index].isHere);
+              print(widget.students![index].status);
+              print(widget.students![index].id);
             });
       },
     );
@@ -429,44 +736,48 @@ class _StudentListState extends State<StudentList> {
 }
 
 class WhiteBox extends StatelessWidget {
-  const WhiteBox({
-    super.key,
-    required this.label,
-    required this.data,
-    required this.colour,
-  });
+  const WhiteBox(
+      {super.key,
+      required this.label,
+      required this.data,
+      required this.colour,
+      required this.func});
 
   final String label;
   final String data;
   final Color? colour;
+  final Function()? func;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 95.0,
-      margin:
-          const EdgeInsets.only(top: 10.0, bottom: 10.0, right: 5.0, left: 5.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            data,
-            style: TextStyle(
-                fontSize: 30.0, fontWeight: FontWeight.w600, color: colour),
-          ),
-          Text(
-            label,
-            style: const TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.w500,
-                color: Color(0xff8A96BC)),
-          ),
-        ],
+    return GestureDetector(
+      onTap: func,
+      child: Container(
+        width: 95.0,
+        margin: const EdgeInsets.only(
+            top: 10.0, bottom: 10.0, right: 5.0, left: 5.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              data,
+              style: TextStyle(
+                  fontSize: 30.0, fontWeight: FontWeight.w600, color: colour),
+            ),
+            Text(
+              label,
+              style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xff8A96BC)),
+            ),
+          ],
+        ),
       ),
     );
   }

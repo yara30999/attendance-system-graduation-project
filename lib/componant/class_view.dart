@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/attendance_list.dart';
 import '../models/filter_lec_model.dart';
+
 class CardData {
   late final String? lecName;
   late final String? lecId;
@@ -27,6 +28,7 @@ class CardData {
 class ClassesView extends StatelessWidget {
   const ClassesView({
     super.key,
+    required this.lectureId,
     required this.lectureName,
     required this.doctorName,
     required this.startDate,
@@ -37,6 +39,7 @@ class ClassesView extends StatelessWidget {
   });
 
   final String? lectureName;
+  final String? lectureId;
   final String? doctorName;
   final String? startDate;
   final String? endDate;
@@ -48,16 +51,30 @@ class ClassesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AttendanceListScreen.id,
-          arguments: {
-            'lectureName': lectureName,
-            'total': total,
-            'here': here,
-            'absent': absent,
-          },
-        );
+        if (total == '0' || total == null) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Attendance List is Empty'),
+              content: const Text('Attendance has not been taken yet ...'),
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          );
+        } else {
+          Navigator.pushNamed(
+            context,
+            AttendanceListScreen.id,
+            arguments: {
+              'lectureId': lectureId,
+              'lectureName': lectureName,
+            },
+          );
+        }
       },
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(15.0)),
@@ -118,7 +135,8 @@ class ClassesView extends StatelessWidget {
                         color: const Color(0xaae0e0e0),
                         width: 1.5,
                       ),
-                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(8.0)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -385,6 +385,7 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
                               scrollDirection: Axis.vertical,
                               itemBuilder: (BuildContext context, int index) {
                                 return ClassesView(
+                                  lectureId: cardList[index].lecId,
                                   lectureName: cardList[index].lecName,
                                   doctorName: cardList[index].userName,
                                   startDate: cardList[index].lecStart,
