@@ -1,39 +1,39 @@
 // To parse this JSON data, do
 //
-//     final attendanceLectureModel = attendanceLectureModelFromJson(jsonString);
+//     final attendanceSectionModel = attendanceSectionModelFromJson(jsonString);
 
 import 'dart:convert';
 
 import 'attend_list_element_model.dart';
 // import '../screens/attendance_list.dart';
 
-AttendanceLectureModel attendanceLectureModelFromJson(String str) =>
-    AttendanceLectureModel.fromJson(json.decode(str));
+AttendanceSectionModel attendanceSectionModelFromJson(String str) =>
+    AttendanceSectionModel.fromJson(json.decode(str));
 
-String attendanceLectureModelToJson(AttendanceLectureModel data) =>
+String attendanceSectionModelToJson(AttendanceSectionModel data) =>
     json.encode(data.toJson());
 
-class AttendanceLectureModel {
+class AttendanceSectionModel {
   String message;
-  Lecture lecture;
+  Section section;
   List<StudentListElement>? studentList;
   int total;
   int here;
   int absent;
 
-  AttendanceLectureModel({
+  AttendanceSectionModel({
     required this.message,
-    required this.lecture,
+    required this.section,
     this.studentList,
     required this.total,
     required this.here,
     required this.absent,
   });
 
-  factory AttendanceLectureModel.fromJson(Map<String, dynamic> json) =>
-      AttendanceLectureModel(
+  factory AttendanceSectionModel.fromJson(Map<String, dynamic> json) =>
+      AttendanceSectionModel(
         message: json["message"],
-        lecture: Lecture.fromJson(json["lecture"]),
+        section: Section.fromJson(json["section"]),
         studentList: json["studentList"] != null
             ? List<StudentListElement>.from(
                 json["studentList"].map((x) => StudentListElement.fromJson(x)))
@@ -45,7 +45,7 @@ class AttendanceLectureModel {
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "lecture": lecture.toJson(),
+        "section": section.toJson(),
         "studentList": List<dynamic>.from(studentList!.map((x) => x.toJson())),
         "total": total,
         "here": here,
@@ -53,20 +53,20 @@ class AttendanceLectureModel {
       };
 }
 
-class Lecture {
+class Section {
   String? id;
   SubjectId? subjectId;
-  String? profId;
+  String? assistId;
   List<String>? attendanceImages;
   DateTime date;
   bool notified;
   List<StudentListElement>? attendanceList;
   int? v;
 
-  Lecture({
+  Section({
     this.id,
     this.subjectId,
-    this.profId,
+    this.assistId,
     this.attendanceImages,
     required this.date,
     required this.notified,
@@ -74,10 +74,10 @@ class Lecture {
     this.v,
   });
 
-  factory Lecture.fromJson(Map<String, dynamic> json) => Lecture(
+  factory Section.fromJson(Map<String, dynamic> json) => Section(
         id: json["_id"],
         subjectId: SubjectId.fromJson(json["subjectId"]),
-        profId: json["profId"],
+        assistId: json["assistId"],
         attendanceImages: json["attendanceImages"] != null
             ? List<String>.from(json["attendanceImages"].map((x) => x))
             : null,
@@ -93,7 +93,7 @@ class Lecture {
   Map<String, dynamic> toJson() => {
         "_id": id,
         "subjectId": subjectId?.toJson(),
-        "profId": profId,
+        "assistId": assistId,
         "attendanceImages": List<dynamic>.from(attendanceImages!.map((x) => x)),
         "date": date.toIso8601String(),
         "notified": notified,

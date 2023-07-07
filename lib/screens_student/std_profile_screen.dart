@@ -1,10 +1,9 @@
 import 'package:fast_tende_doctor_app/screens_student/second_screen.dart';
 import 'package:flutter/material.dart';
-import '../models/student_model.dart';
+import '../models/p_student_model.dart';
 import '../models/auth_state.dart';
 import '../services/base_client.dart';
 import '../services/signin_or_out.dart';
-
 
 class STDProfileScreen extends StatefulWidget {
   const STDProfileScreen({super.key});
@@ -15,7 +14,6 @@ class STDProfileScreen extends StatefulWidget {
 }
 
 class _STDProfileScreenState extends State<STDProfileScreen> {
-
   String? _authToken;
   String? _authType;
   String? _authId;
@@ -40,7 +38,8 @@ class _STDProfileScreenState extends State<STDProfileScreen> {
       ),
     );
   }
-    @override
+
+  @override
   void initState() {
     super.initState();
     loadToken();
@@ -78,28 +77,30 @@ class _STDProfileScreenState extends State<STDProfileScreen> {
   }
 
   void fetchProfileData() async {
-    
-      var response = await BaseClient()
-          .get(
-              '/student/$_authId', _authToken!, errTxt: 'can\'t load data', showError)
-          .catchError((err) {
-        print('yaraaaaaaaaaa error $err');
-      });
-      if (response == null) return;
-      debugPrint('successful:');
-      setState(() {
-        final data = studentModelFromJson(response);
-        name = data.student.name;
-        email = data.student.email;
-        phone = data.student.phoneNumber;
-        id = data.student.id;
-        _isLoaded = true;
-      });
-    
+    var response = await BaseClient()
+        .get(
+            '/student/$_authId',
+            _authToken!,
+            errTxt: 'can\'t load data',
+            showError)
+        .catchError((err) {
+      print('yaraaaaaaaaaa error $err');
+    });
+    if (response == null) return;
+    debugPrint('successful:');
+    setState(() {
+      final data = studentModelFromJson(response);
+      name = data.student.name;
+      email = data.student.email;
+      phone = data.student.phoneNumber;
+      id = data.student.id;
+      _isLoaded = true;
+    });
   }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(

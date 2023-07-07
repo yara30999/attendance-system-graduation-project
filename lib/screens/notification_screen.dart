@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/auth_state.dart';
-import '../models/prof_noti_model.dart';
+import '../models/noti_prof_model.dart';
 import '../services/base_client.dart';
 import 'first_screen.dart';
 import '../componant/appbar_custom.dart';
@@ -230,7 +230,6 @@ class NotificationNumber extends StatelessWidget {
     );
   }
 }
-
 
 class NotificationsLine extends StatelessWidget {
   const NotificationsLine({

@@ -1,9 +1,9 @@
 import 'package:fast_tende_doctor_app/screens/first_screen.dart';
 import 'package:fast_tende_doctor_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import '../models/assistant_model.dart';
+import '../models/p_assistant_model.dart';
 import '../models/auth_state.dart';
-import '../models/proffessor_model.dart';
+import '../models/p_proffessor_model.dart';
 import '../services/base_client.dart';
 import '../login_screen.dart';
 import 'dart:io';

@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:open_file/open_file.dart';
-
+import '../models/attend_list_element_model.dart' as std;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../componant/appbar_custom.dart';
 import '../constants.dart';
 import '../models/attend_lec_model.dart';
+import '../models/attend_sec_model.dart';
 import '../models/auth_state.dart';
 import '../services/base_client.dart';
 import 'first_screen.dart';
@@ -41,9 +43,9 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
   late bool _isLoaded;
 
   bool _notSaved = true;
-  List<StudentListElement>? serverList;
+  List<std.StudentListElement>? serverList;
 
-  void updateServerList(List<StudentListElement> newList) {
+  void updateServerList(List<std.StudentListElement>? newList) {
     setState(() {
       serverList = newList;
     });
@@ -180,11 +182,15 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       tasks.clear();
     });
 
-    if (_authType == 'professor') {
+    final List<String> words = lectureName.split(' ');
+    String firstWord = words[0].toLowerCase();
+
+    if (firstWord == 'section') {
+      const endpoint = 'section-list';
       print('yara ......................:  $lectureId');
       var response = await BaseClient()
           .get(
-              '/lecture/$lectureId$filter',
+              '/$endpoint/$lectureId$filter',
               _authToken!,
               errTxt: 'can\'t load Student list ...',
               showError)
@@ -193,10 +199,10 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       });
       if (response == null) return;
 
-      final data = attendanceLectureModelFromJson(response);
+      final data = attendanceSectionModelFromJson(response);
       if (filter == '') {
         setState(() {
-          serverList = data.studentList;
+          serverList = data.studentList?.cast<std.StudentListElement>();
         });
         //print(serverList);
         // print('...........................................');
@@ -223,7 +229,51 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
           });
         }
       }
-    } else if (_authType == 'assistant') {}
+    } else {
+      const endpoint = 'lecture';
+      print('yara ......................:  $lectureId');
+      var response = await BaseClient()
+          .get(
+              '/$endpoint/$lectureId$filter',
+              _authToken!,
+              errTxt: 'can\'t load Student list ...',
+              showError)
+          .catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+
+      final data = attendanceLectureModelFromJson(response);
+      if (filter == '') {
+        setState(() {
+          serverList = data.studentList?.cast<std.StudentListElement>();
+        });
+        //print(serverList);
+        // print('...........................................');
+        // print(json.encode(serverList));
+      }
+      setState(() {
+        total = data.total.toString();
+        here = data.here.toString();
+        absent = data.absent.toString();
+      });
+      if (data.studentList != null) {
+        for (int i = 0; i < data.studentList!.length; i++) {
+          final stdId = data.studentList?[i].studentId.id;
+          final stdName = data.studentList?[i].studentId.name;
+          final stdImg = data.studentList?[i].snapshot;
+          final stdStatus = data.studentList?[i].status;
+          setState(() {
+            tasks.add(StudentItem(
+              name: stdName.toString(),
+              status: stdStatus,
+              id: stdId,
+              img: stdImg,
+            ));
+          });
+        }
+      }
+    }
   }
 
   Future<void> patchAttendance() async {
@@ -240,23 +290,67 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       // print('...........................................');
       // print(json.encode(myObject));
       // print('...........................................');
-      var response = await BaseClient()
-          .patch(
-              '/attendance/$lectureId',
-              _authToken!,
-              myObject,
-              errTxt: 'can\'t send attendance list to the server ...',
-              showError)
-          .catchError((err) {
-        print('yaraaaaaaaaaa error $err');
-      });
-      if (response == null) return;
-      final data = json.decode(response);
-      print('yaaaaaaaaaaaaaaaaaaaaaaaaaaaaa patch response is : $data');
-    } else if (_authType == 'assistant') {}
+      final List<String> words = lectureName.split(' ');
+      String firstWord = words[0].toLowerCase();
+      if (firstWord == 'lecture') {
+        var response = await BaseClient()
+            .patch(
+                '/attendance/$lectureId',
+                _authToken!,
+                myObject,
+                errTxt: 'can\'t send attendance list to the server ...',
+                showError)
+            .catchError((err) {
+          print('yaraaaaaaaaaa error $err');
+        });
+        if (response == null) return;
+        final data = json.decode(response);
+        print('yaaaaaaaaaaaaaaaaaaaaaaaaaaaaa patch response is : $data');
+      } else {
+        // Show toast message
+        Fluttertoast.showToast(
+          msg: 'You can only see this Attendance list.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+        );
+        setState(() {
+          _notSaved = !_notSaved;
+        });
+      }
+    } else if (_authType == 'assistant') {
+      print('yara ......................:  $lectureId');
+      final myObject = {"attendanceList": serverList};
+      final List<String> words = lectureName.split(' ');
+      String firstWord = words[0].toLowerCase();
+      if (firstWord == 'lecture') {
+        // Show toast message
+        Fluttertoast.showToast(
+          msg: 'You can only see this Attendance list.',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+        );
+        setState(() {
+          _notSaved = !_notSaved;
+        });
+      } else {
+        var response = await BaseClient()
+            .patch(
+                '/section-attendance/$lectureId',
+                _authToken!,
+                myObject,
+                errTxt: 'can\'t send attendance list to the server ...',
+                showError)
+            .catchError((err) {
+          print('yaraaaaaaaaaa error $err');
+        });
+        if (response == null) return;
+        final data = json.decode(response);
+        print('yaaaaaaaaaaaaaaaaaaaaaaaaaaaaa patch response is : $data');
+      }
+    }
   }
 
-  Future<void> saveAsPDF(List<StudentListElement>? students) async {
+  Future<void> saveAsPDF(List<std.StudentListElement>? students) async {
     // // Get the temporary directory for storing the PDF file
     // Directory tempDir = await getTemporaryDirectory();
     // String tempPath = tempDir.path;
@@ -332,6 +426,13 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
     await file.writeAsBytes(await pdf.save());
 
     print('yyyyyyyyyyyyyyyyyy PDF saved at: $pdfFilePath');
+
+    // Show toast message
+    Fluttertoast.showToast(
+      msg: 'Attendance list has been saved as PDF in your internal storage.',
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+    );
 
     // Open the saved PDF file
     OpenFile.open(pdfFilePath);
@@ -597,7 +698,7 @@ class StudentItem {
 
   StudentItem({required this.name, this.status, this.id, this.img});
 
-  void toggleDone(List<StudentListElement>? serverList) {
+  void toggleDone(List<std.StudentListElement>? serverList) {
     status = !status!;
     for (int i = 0; i < serverList!.length; i++) {
       if (serverList[i].studentId.id == id) {
@@ -688,8 +789,8 @@ class StudentList extends StatefulWidget {
     required this.onUpdateMyList,
   });
   final List<StudentItem>? students;
-  final List<StudentListElement>? myList;
-  final Function(List<StudentListElement>) onUpdateMyList;
+  final List<std.StudentListElement>? myList;
+  final Function(List<std.StudentListElement>) onUpdateMyList;
   @override
   State<StudentList> createState() => _StudentListState();
 }
@@ -704,7 +805,7 @@ class _StudentListState extends State<StudentList> {
   //   serverList = widget.myList;
   // }
 
-  void updateMyList(List<StudentListElement> newList) {
+  void updateMyList(List<std.StudentListElement> newList) {
     // Invoke the callback function to update serverList
     widget.onUpdateMyList(newList);
   }
@@ -720,7 +821,7 @@ class _StudentListState extends State<StudentList> {
             isChecked: widget.students![index].status,
             switchCallback: (bool? value) {
               setState(() {
-                widget.students![index].toggleDone(widget.myList);
+                widget.students![index].toggleDone(widget.myList!);
                 // widget.students![index].userChange(widget.myList);
                 updateMyList(widget.myList!);
               });

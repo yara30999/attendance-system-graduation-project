@@ -57,6 +57,7 @@ dependencies:
   pdf: ^3.6.0
   flutter_pdfview: ^1.1.0
   open_file: ^3.2.1
+  fluttertoast: ^8.0.7
 
 dev_dependencies:
   flutter_test:

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../componant/appbar_custom.dart';
 import '../models/auth_state.dart';
-import '../models/std_noti_model.dart';
+import '../models/noti_std_model.dart';
 import '../services/base_client.dart';
 
 //final _firestore = FirebaseFirestore.instance;
