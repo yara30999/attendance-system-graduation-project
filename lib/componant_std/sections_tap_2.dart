@@ -14,7 +14,6 @@ class SectionDataSTD {
       required this.secTime});
 }
 
-
 class SectionsTabSTD extends StatelessWidget {
   const SectionsTabSTD({
     super.key,

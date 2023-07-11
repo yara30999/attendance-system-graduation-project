@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/auth_state.dart';
+import '../models/noti_assis_model.dart';
 import '../models/noti_prof_model.dart';
 import '../services/base_client.dart';
 import 'first_screen.dart';
 import '../componant/appbar_custom.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 //final _firestore = FirebaseFirestore.instance;
 
@@ -133,37 +135,61 @@ class _NotificationScreenState extends State<NotificationScreen> {
       if (data.notification != null) {
         for (int i = 0; i < data.notification!.length; i++) {
           final notiTitle = data.notification?[i].title;
-          final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
-              .format(data.notification![i].date);
-          if (notiTitle?.toLowerCase() == 'lecture date passed') {
-            final data_1 = data.notification?[i].data?.lectureName;
-            final dateString = data.notification?[i].data?.lectureDate;
-            List<String> words = dateString!.split(' ');
-            List<String> firstFourWords = words.sublist(0, 4);
-            String data_2 = firstFourWords.join(' ');
-            setState(() {
-              notificationList.add(NotiDataSTD(
-                title: notiTitle,
-                date: notiDate,
-                data_1: data_1,
-                data_2: data_2,
-              ));
-            });
-          } else {
-            final data_1 = data.notification?[i].data?.profName;
-            final data_2 = data.notification?[i].data?.userType;
-            setState(() {
-              notificationList.add(NotiDataSTD(
-                title: notiTitle,
-                date: notiDate,
-                data_1: data_1,
-                data_2: data_2,
-              ));
-            });
-          }
+          // final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
+          //     .format(data.notification![i].date);
+          final notiDate =
+              timeago.format(data.notification![i].date, locale: 'en_long');
+          final data_1 = 'Lecture: ${data.notification?[i].data?.lectureName}';
+          final dateString = data.notification?[i].data?.lectureDate;
+          List<String> words = dateString!.split(' ');
+          List<String> firstFourWords = words.sublist(0, 4);
+          String data_2 = firstFourWords.join(' ');
+          setState(() {
+            notificationList.add(NotiDataSTD(
+              title: notiTitle,
+              date: notiDate,
+              data_1: data_1,
+              data_2: data_2,
+            ));
+          });
         }
       }
-    } else if (_authType == 'assistant') {}
+    } else if (_authType == 'assistant') {
+      var response = await BaseClient()
+          .get(
+              '/assistant-notification',
+              _authToken!,
+              errTxt: 'can\'t load assistant notifications ...',
+              showError)
+          .catchError((err) {
+        print('yaraaaaaaaaaa error $err');
+      });
+      if (response == null) return;
+
+      final data = assistantNotificationModelFromJson(response);
+      if (data.notification != null) {
+        for (int i = 0; i < data.notification!.length; i++) {
+          final notiTitle = data.notification?[i].title;
+          // final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
+          //     .format(data.notification![i].date);
+          final notiDate =
+              timeago.format(data.notification![i].date, locale: 'en_long');
+          final data_1 = 'Section: ${data.notification?[i].data?.sectionName}';
+          final dateString = data.notification?[i].data?.sectionDate;
+          List<String> words = dateString!.split(' ');
+          List<String> firstFourWords = words.sublist(0, 4);
+          String data_2 = firstFourWords.join(' ');
+          setState(() {
+            notificationList.add(NotiDataSTD(
+              title: notiTitle,
+              date: notiDate,
+              data_1: data_1,
+              data_2: data_2,
+            ));
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -196,11 +222,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       itemCount: notificationList.length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
+                        final reversedIndex =
+                            notificationList.length - index - 1;
                         return NotificationsLine(
-                          label: notificationList[index].title.toString(),
-                          date: notificationList[index].date.toString(),
-                          firstData: notificationList[index].data_1,
-                          secondData: notificationList[index].data_2,
+                          label:
+                              notificationList[reversedIndex].title.toString(),
+                          date: notificationList[reversedIndex].date.toString(),
+                          firstData: notificationList[reversedIndex].data_1,
+                          secondData: notificationList[reversedIndex].data_2,
                         );
                       }),
                 ),
@@ -273,76 +302,90 @@ class NotificationsLine extends StatelessWidget {
               ),
               const SizedBox(height: 2.0),
               Text(
-                date,
+                firstData ?? ' ',
                 style: const TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              Visibility(
-                  visible: firstData != null,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          //width:0.0,
-                          height: 33.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: const Color(0xaae0e0e0),
-                              width: 1.5,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8.0)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 10.0),
-                              Text(
-                                firstData ?? ' ',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(width: 10.0),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          // width: 0.0,
-                          height: 33.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: const Color(0xaae0e0e0),
-                              width: 1.5,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8.0)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 2.5),
-                              Text(
-                                secondData ?? ' ',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(width: 2.5),
-                            ],
-                          ),
-                        ),
-                      ],
+              // Visibility(
+              //   visible: firstData != null,
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(top: 5),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Container(
+              //           //width:0.0,
+              //           height: 33.0,
+              //           decoration: BoxDecoration(
+              //             color: Colors.white,
+              //             border: Border.all(
+              //               color: const Color(0xaae0e0e0),
+              //               width: 1.5,
+              //             ),
+              //             borderRadius:
+              //                 const BorderRadius.all(Radius.circular(8.0)),
+              //           ),
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               const SizedBox(width: 10.0),
+              //               Text(
+              //                 firstData ?? ' ',
+              //                 style: const TextStyle(
+              //                   fontSize: 14.0,
+              //                   fontWeight: FontWeight.w400,
+              //                 ),
+              //               ),
+              //               const SizedBox(width: 10.0),
+              //             ],
+              //           ),
+              //         ),
+              //         Container(
+              //           // width: 0.0,
+              //           height: 33.0,
+              //           decoration: BoxDecoration(
+              //             color: Colors.white,
+              //             border: Border.all(
+              //               color: const Color(0xaae0e0e0),
+              //               width: 1.5,
+              //             ),
+              //             borderRadius:
+              //                 const BorderRadius.all(Radius.circular(8.0)),
+              //           ),
+              //           child: Row(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               const SizedBox(width: 2.5),
+              //               Text(
+              //                 secondData ?? ' ',
+              //                 style: const TextStyle(
+              //                   fontSize: 14.0,
+              //                   fontWeight: FontWeight.w400,
+              //                 ),
+              //               ),
+              //               const SizedBox(width: 2.5),
+              //             ],
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              const SizedBox(height: 2.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    date,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ))
+                  ),
+                ],
+              ),
             ],
           ),
         ),

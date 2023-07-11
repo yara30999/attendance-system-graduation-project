@@ -6,12 +6,15 @@ class SectionData {
   late final String? secId;
   late final String? userName;
   late final String? secTime;
+  late final bool visible;
 
-  SectionData(
-      {required this.secName,
-      required this.secId,
-      required this.userName,
-      required this.secTime});
+  SectionData({
+    required this.secName,
+    required this.secId,
+    required this.userName,
+    required this.secTime,
+    required this.visible,
+  });
 }
 
 class SectionsTab extends StatelessWidget {
@@ -29,6 +32,7 @@ class SectionsTab extends StatelessWidget {
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return ReusableCard(
+            visible: sections![index].visible,
             lectureName: sections![index].secName,
             lectureTime: sections![index].secTime,
             lectureId: sections![index].secId,

@@ -6,7 +6,6 @@ import 'first_screen.dart';
 import '../componant/class_view.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import '../models/filter_lec_model.dart';
 import '../models/filter_pro_sec_model.dart' as model;
 
@@ -165,15 +164,15 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
         final lectureName = 'Lecture ${data.lectures?[i].subjectId?.name}';
         final lectureStart = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(data.lectures![i].date);
+            : DateFormat('H:mm a').format(data.lectures![i].date);
         final incrementedTime = data.lectures == null
             ? null
-            : DateFormat('H:mm')
+            : DateFormat('H:mm a')
                 .parse(lectureStart!)
                 .add(const Duration(hours: 2));
         final lectureEnd = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(incrementedTime!);
+            : DateFormat('H:mm a').format(incrementedTime!);
         final List<AttendanceList>? attendlist =
             data.lectures?[i].attendanceList;
         final total = attendlist?.length.toString();
@@ -242,15 +241,15 @@ class _AttendanceClassesScreenState extends State<AttendanceClassesScreen> {
         final sectionName = 'Section ${data.sections?[i].subjectId?.name}';
         final sectionStart = data.sections == null
             ? null
-            : DateFormat('H:mm').format(data.sections![i].date);
+            : DateFormat('H:mm a').format(data.sections![i].date);
         final incrementedTime = data.sections == null
             ? null
-            : DateFormat('H:mm')
+            : DateFormat('H:mm a')
                 .parse(sectionStart!)
                 .add(const Duration(hours: 2));
         final sectionEnd = data.sections == null
             ? null
-            : DateFormat('H:mm').format(incrementedTime!);
+            : DateFormat('H:mm a').format(incrementedTime!);
         final List<model.AttendanceList>? attendlist =
             data.sections?[i].attendanceList;
         final total = attendlist?.length.toString();

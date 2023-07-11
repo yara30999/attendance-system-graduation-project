@@ -11,7 +11,7 @@ String studentModelToJson(StudentModel data) => json.encode(data.toJson());
 
 class StudentModel {
   String message;
-  Student student;
+  Student? student;
 
   StudentModel({
     required this.message,
@@ -20,12 +20,13 @@ class StudentModel {
 
   factory StudentModel.fromJson(Map<String, dynamic> json) => StudentModel(
         message: json["message"],
-        student: Student.fromJson(json["student"]),
+        student:
+            json["student"] != null ? Student.fromJson(json["student"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
         "message": message,
-        "student": student.toJson(),
+        "student": student?.toJson(),
       };
 }
 

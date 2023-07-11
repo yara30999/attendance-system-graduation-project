@@ -59,12 +59,15 @@ class Lecture {
         completed: json["completed"],
         id: json["_id"],
         subjectId: SubjectId.fromJson(json["subjectId"]),
-        profId: ProfId.fromJson(json["profId"]),
-        attendanceImages:
-            List<String>.from(json["attendanceImages"].map((x) => x)),
+        profId: json["profId"] != null ? ProfId.fromJson(json["profId"]) : null,
+        attendanceImages: json["attendanceImages"] != null
+            ? List<String>.from(json["attendanceImages"].map((x) => x))
+            : null,
         date: DateTime.parse(json["date"]),
-        attendanceList: List<AttendanceList>.from(
-            json["attendanceList"].map((x) => AttendanceList.fromJson(x))),
+        attendanceList: json["attendanceList"] != null
+            ? List<AttendanceList>.from(
+                json["attendanceList"].map((x) => AttendanceList.fromJson(x)))
+            : null,
         v: json["__v"],
         studentStatus: json["studentStatus"],
       );

@@ -6,19 +6,20 @@ import '../componant/appbar_custom.dart';
 import '../models/auth_state.dart';
 import '../models/noti_std_model.dart';
 import '../services/base_client.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 //final _firestore = FirebaseFirestore.instance;
 
 class NotiDataSTD {
   late final String? title;
   late final String? date;
-  late final String? name;
+  late final String? data;
   late final String? status;
 
   NotiDataSTD({
     required this.title,
     required this.date,
-    required this.name,
+    required this.data,
     required this.status,
   });
 }
@@ -117,15 +118,24 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
     if (data.notification != null) {
       for (int i = 0; i < data.notification!.length; i++) {
         final notiTitle = data.notification?[i].title;
-        final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
-            .format(data.notification![i].date);
-        final studentName = data.notification?[i].data?.studentName;
+        // final notiDate = DateFormat('dd-MMMM-yyyy, HH:mm')
+        //     .format(data.notification![i].date);
+        final notiDate =
+            timeago.format(data.notification![i].date, locale: 'en_long');
         final studentStatus = data.notification?[i].data?.studentStatus;
+        final String? secondData;
+        if (data.notification?[i].data?.lectureName != null) {
+          secondData = '${data.notification?[i].data?.lectureName} Lecture';
+        } else if (data.notification?[i].data?.sectionName != null) {
+          secondData = '${data.notification?[i].data?.sectionName} Section';
+        } else {
+          secondData = 'Unknown';
+        }
         setState(() {
           notificationList.add(NotiDataSTD(
             title: notiTitle,
             date: notiDate,
-            name: studentName,
+            data: secondData,
             status: studentStatus,
           ));
         });
@@ -163,11 +173,14 @@ class _STDNotificationScreenState extends State<STDNotificationScreen> {
                       itemCount: notificationList.length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
+                        final reversedIndex =
+                            notificationList.length - index - 1;
                         return NotificationsLine(
-                          label: notificationList[index].title.toString(),
-                          date: notificationList[index].date.toString(),
-                          stdName: notificationList[index].name,
-                          stdStatus: notificationList[index].status,
+                          label:
+                              notificationList[reversedIndex].title.toString(),
+                          date: notificationList[reversedIndex].date.toString(),
+                          stdData: notificationList[reversedIndex].data,
+                          stdStatus: notificationList[reversedIndex].status,
                         );
                       }),
                 ),
@@ -203,13 +216,13 @@ class NotificationsLine extends StatelessWidget {
     super.key,
     required this.label,
     required this.date,
-    this.stdName,
+    this.stdData,
     this.stdStatus,
   });
 
   final String label;
   final String date;
-  final String? stdName;
+  final String? stdData;
   final String? stdStatus;
 
   @override
@@ -240,58 +253,72 @@ class NotificationsLine extends StatelessWidget {
               ),
               const SizedBox(height: 2.0),
               Text(
-                date,
+                stdStatus?.toLowerCase().trim() == 'true'
+                    ? 'You attended the $stdData .'
+                    : 'You missed the $stdData .',
                 style: const TextStyle(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              Visibility(
-                  visible: stdName != null,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Student : ${stdName ?? ' '}',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        Container(
-                          // width: 0.0,
-                          height: 33.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: const Color(0xaae0e0e0),
-                              width: 1.5,
-                            ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8.0)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 2.5),
-                              Text(
-                                stdStatus?.toLowerCase().trim() == 'true'
-                                    ? 'You attended the lecture.'
-                                    : 'You missed the lecture.',
-                                style: const TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(width: 2.5),
-                            ],
-                          ),
-                        ),
-                      ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    date,
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ))
+                  ),
+                ],
+              ),
+              // Visibility(
+              //     visible: stdName != null,
+              //     child: Padding(
+              //       padding: const EdgeInsets.only(top: 5),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             'Student : ${stdName ?? ' '}',
+              //             style: const TextStyle(
+              //               fontSize: 14.0,
+              //               fontWeight: FontWeight.w400,
+              //             ),
+              //           ),
+              //           Container(
+              //             // width: 0.0,
+              //             height: 33.0,
+              //             decoration: BoxDecoration(
+              //               color: Colors.white,
+              //               border: Border.all(
+              //                 color: const Color(0xaae0e0e0),
+              //                 width: 1.5,
+              //               ),
+              //               borderRadius:
+              //                   const BorderRadius.all(Radius.circular(8.0)),
+              //             ),
+              //             child: Row(
+              //               mainAxisAlignment: MainAxisAlignment.center,
+              //               children: [
+              //                 const SizedBox(width: 2.5),
+              //                 Text(
+              //                   stdStatus?.toLowerCase().trim() == 'true'
+              //                       ? 'You attended the lecture.'
+              //                       : 'You missed the lecture.',
+              //                   style: const TextStyle(
+              //                     fontSize: 14.0,
+              //                     fontWeight: FontWeight.w400,
+              //                   ),
+              //                 ),
+              //                 const SizedBox(width: 2.5),
+              //               ],
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ))
             ],
           ),
         ),

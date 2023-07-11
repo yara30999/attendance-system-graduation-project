@@ -90,10 +90,10 @@ class _STDProfileScreenState extends State<STDProfileScreen> {
     debugPrint('successful:');
     setState(() {
       final data = studentModelFromJson(response);
-      name = data.student.name;
-      email = data.student.email;
-      phone = data.student.phoneNumber;
-      id = data.student.id;
+      name = data.student!.name;
+      email = data.student!.email;
+      phone = data.student!.phoneNumber;
+      id = data.student!.id;
       _isLoaded = true;
     });
   }

@@ -69,25 +69,26 @@ class Notification {
 }
 
 class Data {
-  String? studentName;
-  String? studentStatus;
-  String? userType;
+  String studentStatus;
+  String? lectureName;
+  String? sectionName;
 
   Data({
-    this.studentName,
-    this.studentStatus,
-    this.userType,
+    required this.studentStatus,
+    this.lectureName,
+    this.sectionName,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        studentName: json["studentName"],
         studentStatus: json["studentStatus"],
-        userType: json["userType"],
+        lectureName: json["lectureName"],
+        sectionName: json["sectionName"],
       );
 
   Map<String, dynamic> toJson() => {
-        "studentName": studentName,
         "studentStatus": studentStatus,
-        "userType": userType,
+        "lectureName": lectureName,
+        "sectionName": sectionName,
       };
 }
+

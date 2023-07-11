@@ -153,15 +153,15 @@ class _STDAttendanceClassesScreenState
         final lectureDay = _selectedDate;
         final lectureStart = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(data.lectures![i].date);
+            : DateFormat('H:mm a').format(data.lectures![i].date);
         final incrementedTime = data.lectures == null
             ? null
-            : DateFormat('H:mm')
+            : DateFormat('H:mm a')
                 .parse(lectureStart!)
                 .add(const Duration(hours: 2));
         final lectureEnd = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(incrementedTime!);
+            : DateFormat('H:mm a').format(incrementedTime!);
         final studentStatus = data.lectures?[i].studentStatus;
 
         setState(() {
@@ -205,15 +205,15 @@ class _STDAttendanceClassesScreenState
         final sectionDay = _selectedDate;
         final sectionStart = data.section == null
             ? null
-            : DateFormat('H:mm').format(data.section![i].date);
+            : DateFormat('H:mm a').format(data.section![i].date);
         final incrementedTime = data.section == null
             ? null
-            : DateFormat('H:mm')
+            : DateFormat('H:mm a')
                 .parse(sectionStart!)
                 .add(const Duration(hours: 2));
         final sectionEnd = data.section == null
             ? null
-            : DateFormat('H:mm').format(incrementedTime!);
+            : DateFormat('H:mm a').format(incrementedTime!);
         final studentStatus = data.section?[i].studentStatus;
 
         setState(() {

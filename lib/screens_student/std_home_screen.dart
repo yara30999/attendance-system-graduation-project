@@ -142,11 +142,12 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
     if (data.lectures != null) {
       for (int i = 0; i < data.lectures!.length; i++) {
         final lectureId = data.lectures?[i].id;
-        final lectureName = data.lectures?[i].subjectId?.name;
+        final lectureName =
+            'Lecture: \n\t\t\t\t${data.lectures?[i].subjectId?.name}';
         final lectureOwner = 'Dr. ${data.lectures?[i].profId?.name}';
         final lectureTime = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(data.lectures![i].date);
+            : DateFormat('H:mm a').format(data.lectures![i].date);
 
         setState(() {
           // lectureList.clear();
@@ -187,11 +188,12 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
     if (data.section != null) {
       for (int i = 0; i < data.section!.length; i++) {
         final sectionId = data.section?[i].id;
-        final sectionName = data.section?[i].subjectId?.name;
+        final sectionName =
+            'Section: \n\t\t\t\t${data.section?[i].subjectId?.name}';
         final sectionOwner = 'Eng. ${data.section?[i].assistId?.name}';
         final sectionTime = data.section == null
             ? null
-            : DateFormat('H:mm').format(data.section![i].date);
+            : DateFormat('H:mm a').format(data.section![i].date);
 
         setState(() {
           //sectionlist.clear();
@@ -240,46 +242,42 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                   ),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Welcome Back',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w500),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         // 1) digital clock was here
-                        Text(
-                          'Welcome Back',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500),
+                        Column(
+                          children: const [
+                            Text(
+                              'Let\'s find \nYour next class!',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                         // 2) profile photo
-                        SizedBox(
-                          height: 30.0,
-                          width: 30.0,
+                        const SizedBox(
+                          height: 66.0,
+                          width: 66.0,
                           child: UserPhoto(
                             img: 'images/user1.png',
                             rounded: false,
                           ),
                         ),
                       ],
-                    ),
-                    const Text(
-                      'Let\'s find',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    const Text(
-                      'Your next class!',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 10.0),
                     // 3) search field
@@ -318,7 +316,7 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                   children: [
                     DatePicker(
                       DateTime(2023, 6, 19),
-                      initialSelectedDate: DateTime(2023, 6, 20),
+                      initialSelectedDate: DateTime.now(),
                       selectionColor: const Color(0xff0d8ad5),
                       selectedTextColor: Colors.white,
                       monthTextStyle: const TextStyle(
@@ -366,7 +364,7 @@ class _STDHomeScreenState extends State<STDHomeScreen> {
                                 ]),
                           ),
                           SizedBox(
-                            height: 250.0,
+                            height: 210.0,
                             child: Center(
                               child: TabBarView(children: [
                                 ClassesTabSTD(lecture: _filteredData),

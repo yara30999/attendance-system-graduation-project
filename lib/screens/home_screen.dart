@@ -118,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
         lectureList.clear();
         _lecIsLoaded = true;
       });
+
       return;
     }
     setState(() {
@@ -137,11 +138,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (data.lectures != null) {
       for (int i = 0; i < data.lectures!.length; i++) {
         final lectureId = data.lectures?[i].id;
-        final lectureName = data.lectures?[i].subjectId?.name;
+        final lectureName =
+            'Lecture: \n\t\t\t\t${data.lectures?[i].subjectId?.name}';
         final lectureTime = data.lectures == null
             ? null
-            : DateFormat('H:mm').format(data.lectures![i].date);
+            : DateFormat('H:mm a').format(data.lectures![i].date);
         final personName = 'Dr. $_authName';
+        const visible = true;
         setState(() {
           if (data.lectures != null) {
             lectureList.add(LectureData(
@@ -149,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
               lecName: lectureName,
               lecTime: lectureTime,
               userName: personName,
+              visible: visible,
             ));
           }
         });
@@ -161,10 +165,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchSectionsData() async {
     final String endpoint;
+    final bool visible;
     if (_authType == 'assistant') {
       endpoint = 'filtered-sections';
+      visible = true;
     } else {
       endpoint = 'professor-sections';
+      visible = false;
     }
     setState(() {
       sectionlist.clear();
@@ -183,12 +190,14 @@ class _HomeScreenState extends State<HomeScreen> {
     if (data.sections != null) {
       for (int i = 0; i < data.sections!.length; i++) {
         final sectionId = data.sections?[i].id;
-        final sectionName = data.sections?[i].subjectId?.name;
+        final sectionName =
+            'Section: \n\t\t\t\t${data.sections?[i].subjectId?.name}';
         final sectionTime = data.sections == null
             ? null
-            : DateFormat('H:mm').format(data.sections![i].date);
+            : DateFormat('H:mm a').format(data.sections![i].date);
         final personName =
             _authType == 'assistant' ? 'Eng. $_authName' : 'Dr. $_authName';
+
         setState(() {
           if (data.sections != null) {
             sectionlist.add(SectionData(
@@ -196,6 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
               secName: sectionName,
               secTime: sectionTime,
               userName: personName,
+              visible: visible,
             ));
           }
         });
@@ -234,46 +244,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text(
+                      'Welcome Back',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.w500),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         // 1) digital clock was here
-                        Text(
-                          'Welcome Back',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w500),
+                        Column(
+                          children: const [
+                            Text(
+                              'Let\'s find \nYour next class!',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                         // 2) profile photo
-                        SizedBox(
-                          height: 30.0,
-                          width: 30.0,
+                        const SizedBox(
+                          height: 66.0,
+                          width: 66.0,
                           child: UserPhoto(
                             img: 'images/user1.png',
                             rounded: false,
                           ),
                         ),
                       ],
-                    ),
-                    const Text(
-                      'Let\'s find',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600),
-                    ),
-                    const Text(
-                      'Your next class!',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 10.0),
                     // 3) search field
@@ -312,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     DatePicker(
                       DateTime(2023, 6, 19),
-                      initialSelectedDate: DateTime(2023, 6, 20),
+                      initialSelectedDate: DateTime.now(),
                       selectionColor: const Color(0xff0d8ad5),
                       selectedTextColor: Colors.white,
                       monthTextStyle: const TextStyle(
@@ -360,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ]),
                           ),
                           SizedBox(
-                            height: 250.0,
+                            height: 210.0,
                             child: Center(
                               child: TabBarView(children: [
                                 ClassesTab(lecture: _filteredData),

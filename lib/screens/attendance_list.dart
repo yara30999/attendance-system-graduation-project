@@ -40,6 +40,7 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
   String? _authToken;
   String? _authType;
   String? _authId;
+  String? _regToken;
   late bool _isLoaded;
 
   bool _notSaved = true;
@@ -165,7 +166,14 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
         _authId = value;
       });
     });
-    print('my type $_authId');
+    print('my id $_authId');
+    //////////////////////////////////////////////////then get registeration token.
+    await tokenState.getRegisterationToken().then((value) {
+      setState(() {
+        _regToken = value;
+      });
+    });
+    print('my registeration token $_regToken');
     await passedData();
     checkLoadedData();
   }
@@ -292,10 +300,10 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       // print('...........................................');
       final List<String> words = lectureName.split(' ');
       String firstWord = words[0].toLowerCase();
-      if (firstWord == 'lecture') {
+      if (firstWord == 'lecture' || firstWord == 'lecture:') {
         var response = await BaseClient()
             .patch(
-                '/attendance/$lectureId',
+                '/attendance/$lectureId?deviceToken=${_regToken!}',
                 _authToken!,
                 myObject,
                 errTxt: 'can\'t send attendance list to the server ...',
@@ -322,7 +330,7 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       final myObject = {"attendanceList": serverList};
       final List<String> words = lectureName.split(' ');
       String firstWord = words[0].toLowerCase();
-      if (firstWord == 'lecture') {
+      if (firstWord == 'lecture' || firstWord == 'lecture:') {
         // Show toast message
         Fluttertoast.showToast(
           msg: 'You can only see this Attendance list.',
@@ -335,7 +343,7 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
       } else {
         var response = await BaseClient()
             .patch(
-                '/section-attendance/$lectureId',
+                '/section-attendance/$lectureId?deviceToken=${_regToken!}',
                 _authToken!,
                 myObject,
                 errTxt: 'can\'t send attendance list to the server ...',
@@ -764,15 +772,15 @@ class StudentTile extends StatelessWidget {
             activeColor: Colors.white,
             activeTrackColor: const Color(0xff9DEAC0),
             inactiveTrackColor: const Color(0xffFF9A9A),
-            thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
-              (Set<MaterialState> states) {
-                // Thumb icon when the switch is selected.
-                if (states.contains(MaterialState.selected)) {
-                  return const Icon(Icons.check, color: Color(0xff21005D));
-                } // Thumb icon when the switch is disabled.
-                return const Icon(Icons.close, color: Color(0xff21005D));
-              },
-            ),
+            // thumbIcon: MaterialStateProperty.resolveWith<Icon?>(
+            //   (Set<MaterialState> states) {
+            //     // Thumb icon when the switch is selected.
+            //     if (states.contains(MaterialState.selected)) {
+            //       return const Icon(Icons.check, color: Color(0xff21005D));
+            //     } // Thumb icon when the switch is disabled.
+            //     return const Icon(Icons.close, color: Color(0xff21005D));
+            //   },
+            // ),
             onChanged: switchCallback,
           )
         ],

@@ -1,24 +1,24 @@
 // To parse this JSON data, do
 //
-//     final studentNotificationModel = studentNotificationModelFromJson(jsonString);
+//     final assistantNotificationModel = assistantNotificationModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ProfessorNotificationModel professorNotificationModelFromJson(String str) =>
-    ProfessorNotificationModel.fromJson(json.decode(str));
+AssistantNotificationModel assistantNotificationModelFromJson(String str) =>
+    AssistantNotificationModel.fromJson(json.decode(str));
 
-String professorNotificationModelToJson(ProfessorNotificationModel data) =>
+String assistantNotificationModelToJson(AssistantNotificationModel data) =>
     json.encode(data.toJson());
 
-class ProfessorNotificationModel {
+class AssistantNotificationModel {
   List<Notification>? notification;
 
-  ProfessorNotificationModel({
+  AssistantNotificationModel({
     this.notification,
   });
 
-  factory ProfessorNotificationModel.fromJson(Map<String, dynamic> json) =>
-      ProfessorNotificationModel(
+  factory AssistantNotificationModel.fromJson(Map<String, dynamic> json) =>
+      AssistantNotificationModel(
         notification: json["notification"] != null
             ? List<Notification>.from(
                 json["notification"].map((x) => Notification.fromJson(x)))
@@ -33,8 +33,8 @@ class ProfessorNotificationModel {
 
 class Notification {
   String id;
-  String title;
-  String body;
+  String? title;
+  String? body;
   Data? data;
   String? userId;
   DateTime date;
@@ -77,41 +77,41 @@ class Notification {
 //     EnumValues({"Notification message": Body.NOTIFICATION_MESSAGE});
 
 class Data {
-  String? lectureName;
-  String? lectureDate;
+  String? sectionName;
+  String? sectionDate;
 
   Data({
-    this.lectureName,
-    this.lectureDate,
+    this.sectionName,
+    this.sectionDate,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        lectureName: json["lectureName"],
-        lectureDate: json["lectureDate"],
+        sectionName: json["sectionName"],
+        sectionDate: json["sectionDate"],
       );
 
   Map<String, dynamic> toJson() => {
-        "lectureName": lectureName,
-        "lectureDate": lectureDate,
+        "sectionName": sectionName,
+        "sectionDate": sectionDate,
       };
 }
 
-// enum Title {
-//   ATTENDENCE_TAKEN_SUCCESSFULLY,
-//   ATTENDENCE_MODIFIED_SUCCESSFULLY,
-//   LECTURE_DATE_PASSED
-// }
+// enum SectionName { FUZZY_CONTROL }
+
+// final sectionNameValues =
+//     EnumValues({"Fuzzy Control": SectionName.FUZZY_CONTROL});
+
+// enum Title { SECTION_DATE_PASSED, ATTENDENCE_MODIFIED_SUCCESSFULLY }
 
 // final titleValues = EnumValues({
 //   "Attendence modified successfully": Title.ATTENDENCE_MODIFIED_SUCCESSFULLY,
-//   "Attendence taken successfully": Title.ATTENDENCE_TAKEN_SUCCESSFULLY,
-//   "Lecture date passed": Title.LECTURE_DATE_PASSED
+//   "Section date passed": Title.SECTION_DATE_PASSED
 // });
 
-// enum UserId { THE_644_D5_AB6_B36_EB64_ADC52_E9_E8 }
+// enum UserId { THE_64_A71120869_AEBB9_B2_AC8_D6_F }
 
 // final userIdValues = EnumValues(
-//     {"644d5ab6b36eb64adc52e9e8": UserId.THE_644_D5_AB6_B36_EB64_ADC52_E9_E8});
+//     {"64a71120869aebb9b2ac8d6f": UserId.THE_64_A71120869_AEBB9_B2_AC8_D6_F});
 
 // class EnumValues<T> {
 //   Map<String, T> map;

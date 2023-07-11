@@ -1,14 +1,6 @@
-// import 'package:awesome_notification/main.dart';
-// import 'package:awesome_notification/screens/second_screen.dart';
-
-import 'dart:convert';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:fast_tende_doctor_app/screens/first_screen.dart';
 import 'package:flutter/material.dart';
-
 import '../main.dart';
-import '../screens/home_page.dart';
 import '../screens/notification_screen.dart';
 
 class NotificationService {

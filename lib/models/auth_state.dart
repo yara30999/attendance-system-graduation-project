@@ -10,11 +10,13 @@ class TokenSaved {
   late String? _authType;
   late String? _authId;
   late String? _authName;
+  late String? _registerationToken;
 
   String? get authToken => _authToken;
   String? get authType => _authType;
   String? get authId => _authId;
   String? get authName => _authName;
+  String? get registerationToken => _registerationToken;
 
   set authToken(String? value) {
     _authToken = value;
@@ -30,6 +32,10 @@ class TokenSaved {
 
   set authName(String? value) {
     _authName = value;
+  }
+
+  set registerationToken(String? value) {
+    _registerationToken = value;
   }
 
   Future<void> setAuthToken(String value) async {
@@ -56,6 +62,12 @@ class TokenSaved {
     authName = value;
   }
 
+  Future<void> setRegisterationToken(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('registerationToken', value);
+    registerationToken = value;
+  }
+
   Future<String?> getAuthToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authToken = prefs.getString('authToken');
@@ -78,6 +90,12 @@ class TokenSaved {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     authName = prefs.getString('authName');
     return authName;
+  }
+
+  Future<String?> getRegisterationToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    registerationToken = prefs.getString('registerationToken');
+    return registerationToken;
   }
 }
 

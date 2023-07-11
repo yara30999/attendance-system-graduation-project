@@ -1,7 +1,6 @@
 import 'package:fast_tende_doctor_app/componant/user_photo.dart';
 import 'package:flutter/material.dart';
 
-
 class ReusableCardSTD extends StatelessWidget {
   const ReusableCardSTD(
       {super.key,
@@ -32,7 +31,7 @@ class ReusableCardSTD extends StatelessWidget {
               const UserPhoto(img: 'images/user1.png', rounded: false),
               const SizedBox(height: 18.0),
               Text(
-                '$lectureTime AM',
+                lectureTime,
                 style: const TextStyle(
                     color: Color.fromARGB(255, 100, 100, 101),
                     fontSize: 13.0,
@@ -47,7 +46,7 @@ class ReusableCardSTD extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                lectureName!.toUpperCase(),
+                lectureName!,
                 style: const TextStyle(
                     color: Color(0xff074E79),
                     fontSize: 18.0,

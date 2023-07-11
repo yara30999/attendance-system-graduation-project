@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../screens/attendance_list.dart';
-import '../models/filter_lec_model.dart';
 
 class CardData {
   late final String? lecName;
@@ -128,7 +127,7 @@ class ClassesView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    width: 80.0,
+                    width: 120.0,
                     height: 33.0,
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -153,7 +152,7 @@ class ClassesView extends StatelessWidget {
                   ),
                   const SizedBox(width: 8.0),
                   Container(
-                    width: 80.0,
+                    width: 120.0,
                     height: 33.0,
                     decoration: BoxDecoration(
                       border: Border.all(

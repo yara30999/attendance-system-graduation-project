@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum status { checked, unchecked, waiting }
-
 class CardData {
   late final String? lecName;
   late final String? lecId;
@@ -73,7 +71,7 @@ class ClassesViewSTD extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: Colors.black),
                   ),
-                  const SizedBox(height: 2.0),
+                  const SizedBox(height: 8.0),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -92,11 +90,12 @@ class ClassesViewSTD extends StatelessWidget {
                           ),
                         ),
                       ]),
+                  const SizedBox(height: 8.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        width: 80.0,
+                        width: 120.0,
                         height: 33.0,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -121,7 +120,7 @@ class ClassesViewSTD extends StatelessWidget {
                       ),
                       const SizedBox(width: 8.0),
                       Container(
-                        width: 80.0,
+                        width: 120.0,
                         height: 33.0,
                         decoration: BoxDecoration(
                           border: Border.all(
@@ -144,13 +143,6 @@ class ClassesViewSTD extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // Text(
-                      //   'Status: $status',
-                      //   style: const TextStyle(
-                      //     fontSize: 15.0,
-                      //     fontWeight: FontWeight.w400,
-                      //   ),
-                      // ),
                     ],
                   ),
                 ],

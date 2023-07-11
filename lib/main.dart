@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fast_tende_doctor_app/services/notification_service.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +13,13 @@ import 'screens/notification_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'screens/home_page.dart';
 import 'screens_student/second_screen.dart';
 import 'screens_student/std_home_screen.dart';
 import 'screens_student/std_attendance_classes_screen.dart';
 import 'screens_student/std_notification_screen.dart';
 import 'screens_student/std_profile_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -38,33 +34,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final orderDate = message.data['orderDate'];
   print('my title is ...$title');
   print('my body is ..$body');
-  //await saveToDatabase(orderId, orderDate);
   await NotificationService.showNotification(
     title: title,
     body: body,
   );
-  // Navigator.pushNamed(
-  //   navigatorKey.currentState!.context,
-  //   NotificationScreen.id,
-  // );
 }
 
-Future<void> saveToDatabase(orderId, orderDate) async {
-  final userType = await tokenState.getAuthType();
-  DateTime dateTime = DateFormat('yyyy-M-d').parse(orderDate);
-  print('datetime is .....$dateTime');
-  Timestamp timestamp = Timestamp.fromDate(dateTime);
-  print('timestamp is .....$timestamp');
-  await _firestore.collection('notifications_${userType!.toLowerCase()}').add({
-    'orderId': orderId,
-    'orderDate': timestamp,
-  });
-}
-
-Future<void> getToken() async {
+Future<void> getRegistrationToken() async {
   String? token = await FirebaseMessaging.instance.getToken();
   print('my regiteration token is .... $token');
-  // return token ?? '';
+  await tokenState.setRegisterationToken(token!);
 }
 
 final _firestore = FirebaseFirestore.instance;
@@ -76,7 +55,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await getToken();
+  await getRegistrationToken();
 
   // if the app in the background
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -115,7 +94,6 @@ class DoctorApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       theme: ThemeData.light(),
       //home: const LoginScreen(),
-      // initialRoute: FirstScreen.id,
       initialRoute: LoginCheck.id,
       routes: {
         LoginScreen.id: (context) => const LoginScreen(),
@@ -128,7 +106,6 @@ class DoctorApp extends StatelessWidget {
         ProfileScreen.id: (context) => const ProfileScreen(),
         NotificationScreen.id: (context) => const NotificationScreen(),
         LoginCheck.id: (context) => const LoginCheck(),
-        HomePage.id: (context) => const HomePage(),
         SecondScreen.id: (context) => const SecondScreen(),
         STDHomeScreen.id: (context) => const STDHomeScreen(),
         STDAttendanceClassesScreen.id: (context) =>
@@ -199,10 +176,6 @@ class _LoginCheckState extends State<LoginCheck> {
           title: title,
           body: body,
         );
-        // Navigator.pushNamed(
-        //   navigatorKey.currentState!.context,
-        //   NotificationScreen.id,
-        // );
       }
     });
 
@@ -218,9 +191,6 @@ class _LoginCheckState extends State<LoginCheck> {
         print('my body is ..$body');
         print('my orderId is ...$orderId');
         print('my orderDate is ..$orderDate');
-
-        //await saveToDatabase(orderId, orderDate);
-
         showDialog(
             context: navigatorKey.currentState!.context,
             builder: (_) {
@@ -236,10 +206,6 @@ class _LoginCheckState extends State<LoginCheck> {
                 ),
               );
             });
-        // Navigator.pushNamed(
-        //   navigatorKey.currentState!.context,
-        //   NotificationScreen.id,
-        // );
       }
     });
 
@@ -252,17 +218,8 @@ class _LoginCheckState extends State<LoginCheck> {
         if (message.notification != null) {
           final title = message.notification!.title.toString();
           final body = message.notification!.body.toString();
-          // final orderId = message.data['orderId'];
-          // final orderDate = message.data['orderDate'];
           print('my title is ...$title');
           print('my body is ..$body');
-          // print('my orderId is ...$orderId');
-          // print('my orderDate is ..$orderDate');
-          //await saveToDatabase(orderId, orderDate);
-          // Navigator.pushNamed(
-          //   navigatorKey.currentState!.context,
-          //   NotificationScreen.id,
-          // );
         }
       }
     });
@@ -307,12 +264,11 @@ class _LoginCheckState extends State<LoginCheck> {
       if (_authToken == 'empty' || _authToken == '' || _authToken == null) {
         return const LoginScreen();
       } else {
-        if(_authType == 'student'){
+        if (_authType == 'student') {
           return const SecondScreen();
-        }else{
+        } else {
           return const FirstScreen();
         }
-        
       }
     }
   }
