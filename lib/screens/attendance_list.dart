@@ -193,7 +193,7 @@ class _AttendanceListScreenState extends State<AttendanceListScreen> {
     final List<String> words = lectureName.split(' ');
     String firstWord = words[0].toLowerCase();
 
-    if (firstWord == 'section') {
+    if (firstWord == 'section' || firstWord == 'section:') {
       const endpoint = 'section-list';
       print('yara ......................:  $lectureId');
       var response = await BaseClient()
