@@ -176,9 +176,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
               timeago.format(data.notification![i].date, locale: 'en_long');
           final data_1 = 'Section: ${data.notification?[i].data?.sectionName}';
           final dateString = data.notification?[i].data?.sectionDate;
-          List<String> words = dateString!.split(' ');
-          List<String> firstFourWords = words.sublist(0, 4);
-          String data_2 = firstFourWords.join(' ');
+          List<String>? words = dateString?.split(' ');
+          List<String>? firstFourWords = words?.sublist(0, 4);
+          String? data_2 = firstFourWords?.join(' ');
           setState(() {
             notificationList.add(NotiDataSTD(
               title: notiTitle,
